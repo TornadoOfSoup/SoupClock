@@ -12,3 +12,10 @@ public class Main {
         System.out.println("Resolution: " + res1 + " x " + res2);
     }
 }
+
+class Clock {
+
+    public Clock(int res1, int res2) {
+
+    }
+}
