@@ -79,8 +79,9 @@ class Clock extends JFrame implements Runnable{
         layeredPane.setBackground(Color.BLACK);
 
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
-        digitalClock.setFont(new Font("Courier New", 0, 20));
+        digitalClock.setFont(new Font("Courier New", 0, 32));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
+        digitalClock.setForeground(new Color(200, 0, 0, 200));
         add(digitalClock, BorderLayout.AFTER_LAST_LINE);
 
         Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
@@ -157,7 +158,57 @@ class Clock extends JFrame implements Runnable{
     public void initClockHands() {
         updateTimeVars();
 
-        JPanel handsPanel = new JPanel(new BorderLayout()) {
+        JPanel hourPanel = new JPanel(new BorderLayout()) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(getWidth(), getHeight());
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                biHour = toBufferedImage(hourHand);
+
+                Graphics2D g2dHours = (Graphics2D) g;
+                g2dHours.rotate(Math.toRadians(((hour - 0) * 30) + (minute * 0.5)), getWidth() / 2, getHeight() / 2);
+                g2dHours.drawImage(biHour, (getWidth() - biHour.getWidth(null)) / 2,
+                        (getHeight() - biHour.getHeight(null)) / 2, null);
+
+            }
+        };
+        hourPanel.setBackground(new Color(0, 0,0, 0));
+        hourPanel.setSize(getSize());
+        hourPanel.setOpaque(false);
+
+        add(hourPanel, BorderLayout.CENTER, layeredPane.highestLayer());
+
+        JPanel minutePanel = new JPanel(new BorderLayout()) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(getWidth(), getHeight());
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                biMinute = toBufferedImage(minuteHand);
+
+                Graphics2D g2dMinutes = (Graphics2D) g;
+                g2dMinutes.rotate(Math.toRadians(minute * 6), getWidth() / 2, getHeight() / 2);
+                g2dMinutes.drawImage(biMinute, (getWidth() - biMinute.getWidth(null)) / 2,
+                        (getHeight() - biMinute.getHeight(null)) / 2, null);
+
+            }
+        };
+        minutePanel.setBackground(new Color(0, 0,0, 0));
+        minutePanel.setSize(getSize());
+        minutePanel.setOpaque(false);
+
+        add(minutePanel, BorderLayout.CENTER, layeredPane.highestLayer());
+
+        JPanel secondPanel = new JPanel(new BorderLayout()) {
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(getWidth(), getHeight());
@@ -168,20 +219,6 @@ class Clock extends JFrame implements Runnable{
                 super.paintComponent(g);
 
                 biSecond = toBufferedImage(secondHand);
-                biMinute = toBufferedImage(minuteHand);
-                biHour = toBufferedImage(hourHand);
-
-
-                Graphics2D g2dHours = (Graphics2D) g;
-                g2dHours.rotate(Math.toRadians(((hour - 1) * 30) + (minute * 0.5)), getWidth() / 2, getHeight() / 2);
-                g2dHours.drawImage(biHour, (getWidth() - biHour.getWidth(null)) / 2,
-                        (getHeight() - biHour.getHeight(null)) / 2, null);
-
-                Graphics2D g2dMinutes = (Graphics2D) g;
-                g2dMinutes.rotate(Math.toRadians(minute * 6), getWidth() / 2, getHeight() / 2);
-                g2dMinutes.drawImage(biMinute, (getWidth() - biMinute.getWidth(null)) / 2,
-                        (getHeight() - biMinute.getHeight(null)) / 2, null);
-
 
                 Graphics2D g2dSeconds = (Graphics2D) g;
                 g2dSeconds.rotate(Math.toRadians(second * 6), getWidth() / 2, getHeight() / 2);
@@ -190,12 +227,11 @@ class Clock extends JFrame implements Runnable{
 
             }
         };
-        handsPanel.setBackground(new Color(0, 0,0, 0));
-        handsPanel.setSize(getSize());
-        handsPanel.setOpaque(false);
+        secondPanel.setBackground(new Color(0, 0,0, 0));
+        secondPanel.setSize(getSize());
+        secondPanel.setOpaque(false);
 
-        handsPanel.setVisible(true);
-        add(handsPanel, BorderLayout.CENTER, layeredPane.highestLayer());
+        add(secondPanel, BorderLayout.CENTER, layeredPane.highestLayer());
     }
 
 
@@ -275,7 +311,7 @@ class Clock extends JFrame implements Runnable{
         minute = calendar.get(Calendar.MINUTE);
         hour = calendar.get(Calendar.HOUR);
 
-        System.out.println(hour + ":" + minute + ":" + second);
+        //System.out.println(hour + ":" + minute + ":" + second);
     }
 
     public void updateDigitalClock() {
