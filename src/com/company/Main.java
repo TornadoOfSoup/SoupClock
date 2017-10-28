@@ -1,5 +1,7 @@
 package com.company;
 
+import com.sun.corba.se.impl.orbutil.graph.Graph;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -36,18 +38,25 @@ public class Main {
 class Clock extends JFrame implements Runnable{
 
     private Thread thread;
-    JLayeredPane layeredPane = new JLayeredPane();
+    static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
     ImageIcon bgIcon = new ImageIcon(this.getClass().getResource("resources/jack-o-lantern.png"));
     ImageIcon hourHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-yellow.png"));
     ImageIcon minuteHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-blue.png"));
     ImageIcon secondHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-red.png"));
     ImageIcon numbersIcon = new ImageIcon(this.getClass().getResource("resources/halloween-numbers.png"));
-    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage;
-    JPanel hourPanel, minutePanel, secondPanel;
 
-    Date date;
+    Image secondHand, minuteHand, hourHand;
+
+    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock;
+
+    BufferedImage biSecond, biMinute, biHour;
+    //JPanel handsPanel;
+
     Calendar calendar = GregorianCalendar.getInstance();
+
+    Date date = new Date(System.currentTimeMillis());
+    int second, minute, hour;
 
     public Clock(int width, int height) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
@@ -59,14 +68,20 @@ class Clock extends JFrame implements Runnable{
 
 
     public void initFrame() {
-        this.setTitle("Halloween Clock");
-        this.setLayout(new BorderLayout());
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(resolution[0], resolution[1]);
-        this.getContentPane().setBackground(Color.BLACK);
+        setTitle("Halloween Clock");
+        setLayout(new BorderLayout());
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(resolution[0], resolution[1]);
+        getContentPane().setBackground(Color.BLACK);
 
+        layeredPane.setLayout(new BorderLayout());
         layeredPane.setSize(this.getSize());
-        //layeredPane.setBackground(Color.BLACK);
+        layeredPane.setBackground(Color.BLACK);
+
+        digitalClock = new JLabel(hour + ":" + minute + ":" + second);
+        digitalClock.setFont(new Font("Courier New", 0, 20));
+        digitalClock.setSize(getWidth() / 12, getWidth() / 36);
+        add(digitalClock, BorderLayout.AFTER_LAST_LINE);
 
         Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
                 (int) Math.round(this.getWidth() * 0.5), Image.SCALE_DEFAULT);
@@ -80,41 +95,41 @@ class Clock extends JFrame implements Runnable{
         numbersImage = new JLabel(new ImageIcon(numbers));
         numbersImage.setBounds(0, 0, resolution[0], resolution[1]);
         
-        Image hourHand = hourHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.12),
+        hourHand = hourHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.16),
                 (int) Math.round(backgroundImage.getWidth() * 0.45), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         hourHandImage = new JLabel(new ImageIcon(hourHand));
         hourHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //hourPanel.add(hourHandImage);
         
-        Image minuteHand = minuteHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.12),
+        minuteHand = minuteHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.12),
                 (int) Math.round(backgroundImage.getWidth() * 0.6), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         minuteHandImage = new JLabel(new ImageIcon(minuteHand));
         minuteHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //minutePanel.add(minuteHandImage);
 
-        Image secondHand = secondHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.10),
-                (int) Math.round(backgroundImage.getWidth() * 0.6), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
+        secondHand = secondHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.08),
+                (int) Math.round(backgroundImage.getWidth() * 0.62), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         secondHandImage = new JLabel(new ImageIcon(secondHand));
         secondHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //secondPanel.add(secondHandImage);
-
+        
         layeredPane.add(backgroundImage, BorderLayout.CENTER, new Integer(0)); //Integers are depth
         layeredPane.add(numbersImage, BorderLayout.CENTER, new Integer(0));
-        layeredPane.add(hourHandImage, BorderLayout.CENTER, new Integer(0));
-        layeredPane.add(minuteHandImage, BorderLayout.CENTER, new Integer(0));
-        layeredPane.add(secondHandImage, BorderLayout.CENTER, new Integer(0));
-        this.add(layeredPane, BorderLayout.CENTER);
+        //layeredPane.add(hourHandImage, BorderLayout.CENTER, new Integer(0));
+        //layeredPane.add(minuteHandImage, BorderLayout.CENTER, new Integer(0));
+        //layeredPane.add(secondHandImage, BorderLayout.CENTER, new Integer(0));
+        initClockHands();
 
-        //setClockHands(); //doesn't currently work
+        add(layeredPane, BorderLayout.CENTER);
 
-        this.setUndecorated(true); //makes it fullscreen
-        this.setVisible(true);
-
-        this.start();
-        this.addKeyListener(new KeyListener() {
+        setUndecorated(true); //makes it fullscreen
+        setVisible(true);
+        
+        start();
+        addKeyListener(new KeyListener() {
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -138,26 +153,57 @@ class Clock extends JFrame implements Runnable{
         });
 
     }
+    
+    public void initClockHands() {
+        updateTimeVars();
 
-    public void setClockHands() {
-        date = new Date(System.currentTimeMillis());
-        calendar.setTime(date);
+        JPanel handsPanel = new JPanel(new BorderLayout()) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(getWidth(), getHeight());
+            }
 
-        int second = calendar.get(Calendar.SECOND);
-        int minute = calendar.get(Calendar.MINUTE);
-        int hour = calendar.get(Calendar.HOUR);
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
 
-        if (secondPanel != null) {
-            this.remove(secondPanel);
-        }
-        if (minutePanel != null) {
-            this.remove(minutePanel);
-        }
-        if (hourPanel != null) {
-            this.remove(hourPanel);
-        }
+                biSecond = toBufferedImage(secondHand);
+                biMinute = toBufferedImage(minuteHand);
+                biHour = toBufferedImage(hourHand);
 
-        BufferedImage biSecond = toBufferedImage(secondHandIcon.getImage());
+
+                Graphics2D g2dHours = (Graphics2D) g;
+                g2dHours.rotate(Math.toRadians(((hour - 1) * 30) + (minute * 0.5)), getWidth() / 2, getHeight() / 2);
+                g2dHours.drawImage(biHour, (getWidth() - biHour.getWidth(null)) / 2,
+                        (getHeight() - biHour.getHeight(null)) / 2, null);
+
+                Graphics2D g2dMinutes = (Graphics2D) g;
+                g2dMinutes.rotate(Math.toRadians(minute * 6), getWidth() / 2, getHeight() / 2);
+                g2dMinutes.drawImage(biMinute, (getWidth() - biMinute.getWidth(null)) / 2,
+                        (getHeight() - biMinute.getHeight(null)) / 2, null);
+
+
+                Graphics2D g2dSeconds = (Graphics2D) g;
+                g2dSeconds.rotate(Math.toRadians(second * 6), getWidth() / 2, getHeight() / 2);
+                g2dSeconds.drawImage(biSecond, (getWidth() - biSecond.getWidth(null)) / 2,
+                        (getHeight() - biSecond.getHeight(null)) / 2, null);
+
+            }
+        };
+        handsPanel.setBackground(new Color(0, 0,0, 0));
+        handsPanel.setSize(getSize());
+        handsPanel.setOpaque(false);
+
+        handsPanel.setVisible(true);
+        add(handsPanel, BorderLayout.CENTER, layeredPane.highestLayer());
+    }
+
+
+    public void initClockHands_NONWORKING() {
+        /*updateTimeVars();
+
+        BufferedImage biSecond = toBufferedImage(secondHand);
+
         secondPanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -176,7 +222,7 @@ class Clock extends JFrame implements Runnable{
         secondPanel.setBackground(new Color(0, 0,0, 0));
         secondPanel.setOpaque(false);
 
-        BufferedImage biMinute = toBufferedImage(minuteHandIcon.getImage());
+        BufferedImage biMinute = toBufferedImage(minuteHand);
         minutePanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -195,7 +241,7 @@ class Clock extends JFrame implements Runnable{
         minutePanel.setBackground(new Color(0, 0,0, 0));
         minutePanel.setOpaque(false);
 
-        BufferedImage biHour = toBufferedImage(hourHandIcon.getImage());
+        BufferedImage biHour = toBufferedImage(hourHand);
         hourPanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -214,11 +260,39 @@ class Clock extends JFrame implements Runnable{
         hourPanel.setBackground(new Color(0, 0,0, 0));
         hourPanel.setOpaque(false);
 
-        layeredPane.add(hourPanel, BorderLayout.CENTER);
-        layeredPane.add(minutePanel, BorderLayout.CENTER);
-        layeredPane.add(secondPanel, BorderLayout.CENTER);
+        //add(hourPanel, BorderLayout.CENTER, layeredPane.highestLayer());
+        //add(minutePanel, BorderLayout.CENTER, layeredPane.highestLayer() + 1);
+        //add(secondPanel, BorderLayout.CENTER, layeredPane.highestLayer() + 2);
+        */
+    }
 
-        System.out.println("Updated clock hands");
+
+    public void updateTimeVars() {
+        date = new Date(System.currentTimeMillis());
+        calendar.setTime(date);
+
+        second = calendar.get(Calendar.SECOND);
+        minute = calendar.get(Calendar.MINUTE);
+        hour = calendar.get(Calendar.HOUR);
+
+        System.out.println(hour + ":" + minute + ":" + second);
+    }
+
+    public void updateDigitalClock() {
+        String strHour = "" + hour;
+        String strMinute = "" + minute;
+        String strSecond = "" + second;
+
+        if (strHour.length() == 1) {
+            strHour = "0" + strHour;
+        }
+        if (strMinute.length() == 1) {
+            strMinute = "0" + strMinute;
+        }
+        if (strSecond.length() == 1) {
+            strSecond = "0" + strSecond;
+        }
+        digitalClock.setText(strHour + ":" + strMinute + ":" + strSecond);
     }
 
     /**
@@ -253,8 +327,10 @@ class Clock extends JFrame implements Runnable{
         while (true) {
             //run
             try {
-                Thread.sleep(500);
-                setClockHands();
+                Thread.sleep(50);
+                updateTimeVars();
+                updateDigitalClock();
+                repaint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
