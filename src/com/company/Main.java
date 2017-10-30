@@ -1,21 +1,24 @@
 package com.company;
 
-import com.sun.corba.se.impl.orbutil.graph.Graph;
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Random;
 
 public class Main {
 
     static Clock c;
+
+
     public static void main(String[] args) {
 
         /*
@@ -30,6 +33,8 @@ public class Main {
 
         System.out.println("Resolution according to toolkit: " + width + " x " + height);
 
+
+
         c = new Clock(width, height);
     }
 
@@ -38,6 +43,9 @@ public class Main {
 class Clock extends JFrame implements Runnable{
 
     private Thread thread;
+
+    static Random r = new Random();
+
     static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
     ImageIcon bgIcon = new ImageIcon(this.getClass().getResource("resources/jack-o-lantern.png"));
@@ -48,7 +56,8 @@ class Clock extends JFrame implements Runnable{
 
     Image secondHand, minuteHand, hourHand;
 
-    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock;
+
+    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock, invisibleLabel;
 
     BufferedImage biSecond, biMinute, biHour;
     //JPanel handsPanel;
@@ -56,12 +65,18 @@ class Clock extends JFrame implements Runnable{
     Calendar calendar = GregorianCalendar.getInstance();
 
     Date date = new Date(System.currentTimeMillis());
-    int second, minute, hour;
+    int second, minute, hour, deltaTime, amOrPM;
+
+    boolean initialFullscreen;
+    boolean doTickingSound;
 
     public Clock(int width, int height) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
         resolution[0] = width;
         resolution[1] = height;
+
+        initialFullscreen = true;
+        doTickingSound = false;
 
         initFrame();
     }
@@ -72,6 +87,7 @@ class Clock extends JFrame implements Runnable{
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(resolution[0], resolution[1]);
+
         getContentPane().setBackground(Color.BLACK);
 
         layeredPane.setLayout(new BorderLayout());
@@ -79,10 +95,13 @@ class Clock extends JFrame implements Runnable{
         layeredPane.setBackground(Color.BLACK);
 
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
-        digitalClock.setFont(new Font("Courier New", 0, 32));
+        digitalClock.setFont(new Font("Courier New", Font.BOLD, 48));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
-        digitalClock.setForeground(new Color(200, 0, 0, 200));
+        digitalClock.setForeground(new Color(200, 0, 0, 150));
+        digitalClock.setOpaque(false);
         add(digitalClock, BorderLayout.AFTER_LAST_LINE);
+
+        invisibleLabel = new JLabel("");
 
         Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
                 (int) Math.round(this.getWidth() * 0.5), Image.SCALE_DEFAULT);
@@ -119,14 +138,17 @@ class Clock extends JFrame implements Runnable{
         
         layeredPane.add(backgroundImage, BorderLayout.CENTER, new Integer(0)); //Integers are depth
         layeredPane.add(numbersImage, BorderLayout.CENTER, new Integer(0));
+        layeredPane.add(invisibleLabel, BorderLayout.CENTER, new Integer(0)); //fixes analog clock numbers being moved by digital clock
         //layeredPane.add(hourHandImage, BorderLayout.CENTER, new Integer(0));
         //layeredPane.add(minuteHandImage, BorderLayout.CENTER, new Integer(0));
         //layeredPane.add(secondHandImage, BorderLayout.CENTER, new Integer(0));
-        initClockHands();
+
+        createClockHands();
+        //createLightningHandler(0, 0);
 
         add(layeredPane, BorderLayout.CENTER);
 
-        setUndecorated(true); //makes it fullscreen
+        setUndecorated(initialFullscreen); //makes it fullscreen
         setVisible(true);
         
         start();
@@ -144,7 +166,49 @@ class Clock extends JFrame implements Runnable{
                     int x = JOptionPane.showConfirmDialog(null,"Do you want to shutdown?", "Shutdown", JOptionPane.YES_NO_OPTION);
                     if (x == 0) {
                         System.exit(0);
-                    } else { }
+                    }
+                } else if (e.getKeyChar() == '1') {
+                    digitalClock.setVisible(!digitalClock.isVisible());
+                } else if (e.getKeyChar() == '2') {
+                    dispose();
+                    setUndecorated(!isUndecorated());
+                    setVisible(true);
+                } else if (e.getKeyChar() == '3') {
+                    doTickingSound = !doTickingSound;
+                } else if (e.getKeyChar() == '4') {
+                    BufferedImage rem = null;
+                    try {
+                        rem = ImageIO.read(this.getClass().getResource("resources/rem.png"));
+                        //randomImageFlyBy(rem, 10);
+                        add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (e.getKeyChar() == '5') {
+                    BufferedImage rem = null;
+                    try {
+                        rem = ImageIO.read(this.getClass().getResource("resources/rem-glowing.png"));
+                        //randomImageFlyBy(rem, 10);
+                        add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (e.getKeyChar() == '6') {
+                    BufferedImage ghost = null;
+                    try {
+                        int direction = r.nextInt(2);
+                        if (direction == 0) { //left
+                            ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-right.png"));
+                            //randomImageFlyBy(rem, 10);
+                            add(new MovingImage(ghost, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
+                        } else { //right
+                            ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-left.png"));
+                            //randomImageFlyBy(rem, 10);
+                            add(new MovingImage(ghost, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
 
@@ -153,9 +217,10 @@ class Clock extends JFrame implements Runnable{
             }
         });
 
+
     }
     
-    public void initClockHands() {
+    public void createClockHands() {
         updateTimeVars();
 
         JPanel hourPanel = new JPanel(new BorderLayout()) {
@@ -234,6 +299,62 @@ class Clock extends JFrame implements Runnable{
         add(secondPanel, BorderLayout.CENTER, layeredPane.highestLayer());
     }
 
+    public void createLightningHandler(int intervalInSeconds, int variationInSeconds) { //TODO make this work
+        JPanel lightningPanel = new JPanel() {
+            @Override
+            public void paintComponents(Graphics g) {
+                super.paintComponents(g);
+
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setColor(Color.WHITE);
+                g2d.drawLine(getWidth() / 3, 0, getWidth() / 3, 100);
+                g2d.drawLine(getWidth() / 3 * 2, 0, getWidth() / 3 * 2, 100);
+            }
+        };
+
+        lightningPanel.setSize(getSize());
+        //lightningPanel.setBackground(new Color(0, 0, 0, 0));
+        lightningPanel.setOpaque(false);
+
+        add(lightningPanel, BorderLayout.CENTER, layeredPane.highestLayer());
+    }
+
+    public void randomImageFlyBy (BufferedImage img, int speed) {
+
+        int leftOrRight = r.nextInt(2);
+        int initY = r.nextInt(resolution[1]);
+        int initX;
+        if (leftOrRight == 0) { //starting left
+            initX = -200;
+        } else { //starting right
+            initX = resolution[0] + 200;
+        }
+        int finalY = r.nextInt(resolution[1]);
+        double deltaY = -((double) (initY - finalY) / (resolution[0] / speed));
+
+        System.out.println("initY: " + initY + " | finalY: " + finalY + " | deltaY: " + deltaY);
+
+        JPanel imagePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                Graphics2D g2d = (Graphics2D) g;
+
+                    if (leftOrRight == 0) { //starting left
+                        g2d.drawImage(img, initX + (speed * deltaTime), initY + (int)(deltaY * deltaTime), null); //TODO figure out how to stop shared deltaTime from aligning all pictures
+                    } else {
+                        g2d.drawImage(img, initX - (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
+                    }
+
+            }
+        };
+        imagePanel.setSize(getSize());
+        imagePanel.setBackground(new Color(0, 0, 0, 0));
+        imagePanel.setOpaque(false);
+
+        add(imagePanel, BorderLayout.CENTER, layeredPane.highestLayer());
+    }
 
     public void initClockHands_NONWORKING() {
         /*updateTimeVars();
@@ -310,6 +431,7 @@ class Clock extends JFrame implements Runnable{
         second = calendar.get(Calendar.SECOND);
         minute = calendar.get(Calendar.MINUTE);
         hour = calendar.get(Calendar.HOUR);
+        amOrPM = calendar.get(Calendar.AM_PM);
 
         //System.out.println(hour + ":" + minute + ":" + second);
     }
@@ -318,6 +440,15 @@ class Clock extends JFrame implements Runnable{
         String strHour = "" + hour;
         String strMinute = "" + minute;
         String strSecond = "" + second;
+        String amOrPM;
+
+        if (this.amOrPM == calendar.AM) {
+            amOrPM = "AM";
+        } else if (this.amOrPM == calendar.PM){
+            amOrPM = "PM";
+        } else {
+            amOrPM = "" + this.amOrPM;
+        }
 
         if (strHour.length() == 1) {
             strHour = "0" + strHour;
@@ -328,7 +459,7 @@ class Clock extends JFrame implements Runnable{
         if (strSecond.length() == 1) {
             strSecond = "0" + strSecond;
         }
-        digitalClock.setText(strHour + ":" + strMinute + ":" + strSecond);
+        digitalClock.setText(strHour + ":" + strMinute + ":" + strSecond + " " + amOrPM);
     }
 
     /**
@@ -359,14 +490,22 @@ class Clock extends JFrame implements Runnable{
 
     @Override
     public void run() {
-
+        int currentSecond = second;
         while (true) {
             //run
             try {
-                Thread.sleep(50);
+                Thread.sleep(16);
                 updateTimeVars();
                 updateDigitalClock();
                 repaint();
+
+                if (doTickingSound) {
+                    if (currentSecond != second) {
+                        SoundEffects.TICK.play();
+                    }
+                }
+                currentSecond = second;
+                deltaTime++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -376,7 +515,7 @@ class Clock extends JFrame implements Runnable{
     public void start () {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Starting " +  this.getClass().getName() + "!");
         if (thread == null) {
-            thread = new Thread (this, "TimedEventsHandlerRunnable");
+            thread = new Thread (this, "ClockRunnable");
             thread.start();
         }
     }
