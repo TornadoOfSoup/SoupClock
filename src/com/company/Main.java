@@ -5,9 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.Key;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -95,7 +95,7 @@ class Clock extends JFrame implements Runnable{
         layeredPane.setBackground(Color.BLACK);
 
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
-        digitalClock.setFont(new Font("Courier New", Font.BOLD, 48));
+        digitalClock.setFont(new Font("Courier New", Font.BOLD, 40));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
         digitalClock.setForeground(new Color(200, 0, 0, 150));
         digitalClock.setOpaque(false);
@@ -167,6 +167,16 @@ class Clock extends JFrame implements Runnable{
                     if (x == 0) {
                         System.exit(0);
                     }
+                } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    digitalClock.setFont(new Font("Courier New", Font.BOLD, digitalClock.getFont().getSize() + 2));
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    if (!(digitalClock.getFont().getSize() <= 2)) {
+                        digitalClock.setFont(new Font("Courier New", Font.BOLD, digitalClock.getFont().getSize() - 2));
+                    }
+                } else if (e.getKeyChar() == '0') { //defaults
+                    digitalClock.setFont(new Font("Courier New", Font.BOLD, 40));
+                    digitalClock.setVisible(true);
+                    doTickingSound = false;
                 } else if (e.getKeyChar() == '1') {
                     digitalClock.setVisible(!digitalClock.isVisible());
                 } else if (e.getKeyChar() == '2') {
@@ -206,6 +216,20 @@ class Clock extends JFrame implements Runnable{
                             //randomImageFlyBy(rem, 10);
                             add(new MovingImage(ghost, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
                         }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (e.getKeyChar() == '7') {
+                    try {
+                        BufferedImage spoopy = ImageIO.read(this.getClass().getResource("resources/spoopy.png"));
+                        add(new MovingImage(spoopy, resolution, r.nextInt(12) + 5, null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else if (e.getKeyChar() == '8') {
+                    try {
+                        BufferedImage travis = ImageIO.read(this.getClass().getResource("resources/travis.png"));
+                        add(new MovingImage(travis, resolution, r.nextInt(10) + 5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }

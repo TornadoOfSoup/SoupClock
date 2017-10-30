@@ -21,7 +21,7 @@ public class MovingImage extends JPanel implements Runnable{
 
     public static final int NEVER_DIE = 0;
     public static final int DIE_WHEN_OFF_SCREEN = 1;
-    public static final int DIE_WHEN_OFF_SCREEN_AFTER_MORE_THAN_120_FRAMES = 2;
+    public static final int DIE_WHEN_OFF_SCREEN_FOR_MORE_THAN_120_FRAMES = 2;
 
     public static final int RANDOM_DIRECTION = 0;
     public static final int LEFT_TO_RIGHT = 1;
@@ -55,10 +55,10 @@ public class MovingImage extends JPanel implements Runnable{
     public boolean checkDeathCondition() {
         if (deathBehavior == NEVER_DIE) {
             return false;
-        } else if (deathBehavior == DIE_WHEN_OFF_SCREEN || deathBehavior == DIE_WHEN_OFF_SCREEN_AFTER_MORE_THAN_120_FRAMES) {
+        } else if (deathBehavior == DIE_WHEN_OFF_SCREEN || deathBehavior == DIE_WHEN_OFF_SCREEN_FOR_MORE_THAN_120_FRAMES) {
             Rectangle imgBounds = new Rectangle(currentX, currentY, img.getWidth(), img.getHeight());
             Rectangle panelBounds = new Rectangle(0, 0, getWidth(), getHeight());
-            if (imgBounds.intersects(panelBounds) || deltaTime < 120) {
+            if (imgBounds.intersects(panelBounds) || deltaTime < 120) { //keeps it from dying before it goes on screen
                 return false;
             } else {
                 return true;
