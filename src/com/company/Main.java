@@ -69,6 +69,8 @@ class Clock extends JFrame implements Runnable{
 
     boolean initialFullscreen;
     boolean doTickingSound;
+    boolean ghostAttack;
+    boolean remAttack;
 
     public Clock(int width, int height) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
@@ -186,53 +188,15 @@ class Clock extends JFrame implements Runnable{
                 } else if (e.getKeyChar() == '3') {
                     doTickingSound = !doTickingSound;
                 } else if (e.getKeyChar() == '4') {
-                    BufferedImage rem = null;
-                    try {
-                        rem = ImageIO.read(this.getClass().getResource("resources/rem.png"));
-                        //randomImageFlyBy(rem, 10);
-                        add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    conjureRem();
                 } else if (e.getKeyChar() == '5') {
-                    BufferedImage rem = null;
-                    try {
-                        rem = ImageIO.read(this.getClass().getResource("resources/rem-glowing.png"));
-                        //randomImageFlyBy(rem, 10);
-                        add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    conjureGlowingRem();
                 } else if (e.getKeyChar() == '6') {
-                    BufferedImage ghost = null;
-                    try {
-                        int direction = r.nextInt(2);
-                        if (direction == 0) { //left
-                            ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-right.png"));
-                            //randomImageFlyBy(rem, 10);
-                            add(new MovingImage(ghost, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
-                        } else { //right
-                            ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-left.png"));
-                            //randomImageFlyBy(rem, 10);
-                            add(new MovingImage(ghost, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
-                        }
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    conjureGhost();
                 } else if (e.getKeyChar() == '7') {
-                    try {
-                        BufferedImage spoopy = ImageIO.read(this.getClass().getResource("resources/spoopy.png"));
-                        add(new MovingImage(spoopy, resolution, r.nextInt(12) + 5, null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    conjureSpoopy();
                 } else if (e.getKeyChar() == '8') {
-                    try {
-                        BufferedImage travis = ImageIO.read(this.getClass().getResource("resources/travis.png"));
-                        add(new MovingImage(travis, resolution, r.nextInt(10) + 5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    conjureTravis();
                 }
             }
 
@@ -380,6 +344,64 @@ class Clock extends JFrame implements Runnable{
         add(imagePanel, BorderLayout.CENTER, layeredPane.highestLayer());
     }
 
+    public void conjureGhost() {
+        BufferedImage ghost = null;
+        try {
+            int direction = r.nextInt(2);
+            if (direction == 0) { //left
+                ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-right.png"));
+                //randomImageFlyBy(rem, 10);
+                add(new MovingImage(ghost, resolution, r.nextInt(15) + 5, null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
+            } else { //right
+                ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-left.png"));
+                //randomImageFlyBy(rem, 10);
+                add(new MovingImage(ghost, resolution, r.nextInt(15) + 5, null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void conjureSpoopy() {
+        try {
+            BufferedImage spoopy = ImageIO.read(this.getClass().getResource("resources/spoopy.png"));
+            add(new MovingImage(spoopy, resolution, r.nextInt(12) + 5, null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void conjureTravis() {
+        try {
+            BufferedImage travis = ImageIO.read(this.getClass().getResource("resources/travis.png"));
+            add(new MovingImage(travis, resolution, r.nextInt(10) + 5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void conjureRem() {
+        BufferedImage rem = null;
+        try {
+            rem = ImageIO.read(this.getClass().getResource("resources/rem.png"));
+            //randomImageFlyBy(rem, 10);
+            add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void conjureGlowingRem() {
+        BufferedImage rem = null;
+        try {
+            rem = ImageIO.read(this.getClass().getResource("resources/rem-glowing.png"));
+            //randomImageFlyBy(rem, 10);
+            add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void initClockHands_NONWORKING() {
         /*updateTimeVars();
 
@@ -518,7 +540,7 @@ class Clock extends JFrame implements Runnable{
         while (true) {
             //run
             try {
-                Thread.sleep(16);
+                Thread.sleep(1000/60);
                 updateTimeVars();
                 updateDigitalClock();
                 repaint();
@@ -528,6 +550,29 @@ class Clock extends JFrame implements Runnable{
                         SoundEffects.TICK.play();
                     }
                 }
+
+                if (r.nextInt(500) == 0) {
+                    conjureGhost();
+                }
+
+                if (r.nextInt(300 * 60) == 0) {
+                    conjureGlowingRem();
+                }
+
+                if (r.nextInt(1000) == 0) {
+                    conjureSpoopy();
+                }
+
+                if (r.nextInt(600 * 60) == 0) {
+                    conjureTravis();
+                }
+
+                if (hour == 2 && minute == 45 && amOrPM == calendar.PM) {
+                    conjureGhost();
+                    conjureSpoopy();
+                    conjureGlowingRem();
+                }
+
                 currentSecond = second;
                 deltaTime++;
             } catch (InterruptedException e) {
