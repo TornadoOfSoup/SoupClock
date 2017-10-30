@@ -85,7 +85,7 @@ class Clock extends JFrame implements Runnable{
 
 
     public void initFrame() {
-        setTitle("Halloween Clock");
+        setTitle("Halloween Clock by TornadoOfSoup");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(resolution[0], resolution[1]);
@@ -100,6 +100,7 @@ class Clock extends JFrame implements Runnable{
         digitalClock.setFont(new Font("Courier New", Font.BOLD, 40));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
         digitalClock.setForeground(new Color(200, 0, 0, 150));
+        digitalClock.setBackground(new Color(0, 0, 0, 0));
         digitalClock.setOpaque(false);
         add(digitalClock, BorderLayout.AFTER_LAST_LINE);
 
@@ -197,6 +198,8 @@ class Clock extends JFrame implements Runnable{
                     conjureSpoopy();
                 } else if (e.getKeyChar() == '8') {
                     conjureTravis();
+                } else if (e.getKeyChar() == '9') {
+                    digitalClock.setText("Made by TornadoOfSoup");
                 }
             }
 
@@ -567,10 +570,131 @@ class Clock extends JFrame implements Runnable{
                     conjureTravis();
                 }
 
+                if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 8 && minute == 19 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+
+                if (hour == 9 && minute == 7 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 9 && minute == 11 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+                if (hour == 9 && minute == 59 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 10 && minute == 3 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+                if (hour == 10 && minute == 51 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 10 && minute == 55 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+                if (hour == 11 && minute == 43 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 11 && minute == 47 && amOrPM == calendar.AM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+                if (hour == 12 && minute == 35 && amOrPM == calendar.PM) {
+                    if (second >= 0 && second <= 15) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                        if (second % 3 == 0) {
+                            conjureGlowingRem();
+                        }
+                    }
+                }
+
+                if (hour == 1 && minute == 5 && amOrPM == calendar.PM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
+                if (hour == 1 && minute == 53 && amOrPM == calendar.PM) {
+                    if (second >= 0 && second <= 10) {
+                        conjureGhost();
+                        if (second % 2 == 0) {
+                            conjureSpoopy();
+                        }
+                    }
+                }
+
+                if (hour == 1 && minute == 57 && amOrPM == calendar.PM) {
+                    if (second >= 0 && second <= 5) {
+                        conjureGhost();
+                    }
+                }
+
                 if (hour == 2 && minute == 45 && amOrPM == calendar.PM) {
                     conjureGhost();
                     conjureSpoopy();
                     conjureGlowingRem();
+                    if (second >= 25 && second <= 35) {
+                        conjureTravis();
+                    }
+                }
+
+                if (hour == 4 && minute == 20 && amOrPM == calendar.PM) {
+                    if (second <= 30) {
+                        conjureSpoopy();
+                        if (second % 2 == 0) {
+                            conjureGlowingRem();
+                        }
+                    }
                 }
 
                 currentSecond = second;
