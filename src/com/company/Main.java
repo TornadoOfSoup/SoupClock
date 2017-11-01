@@ -6,13 +6,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.Key;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
 
@@ -33,9 +33,37 @@ public class Main {
 
         System.out.println("Resolution according to toolkit: " + width + " x " + height);
 
+        JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
 
+        chooser.setCurrentDirectory(currentDirectory());
 
-        c = new Clock(width, height);
+        JOptionPane.showConfirmDialog(null, "Please select the desired configuration file.");
+        int chooserReturnVal = chooser.showOpenDialog(null);
+
+        HashMap<String, String> configHashMap;
+
+        if (chooserReturnVal == JFileChooser.APPROVE_OPTION) {
+            File configFile = chooser.getSelectedFile();
+            ArrayList<String> lines = ConfigParser.readLinesOfFile(configFile);
+            configHashMap = ConfigParser.buildConfigHashMap(lines);
+            for (String line : lines) {
+                System.out.println(line);
+            }
+        } else {
+            JOptionPane.showConfirmDialog(null, "Using default configuration.");
+            configHashMap = ConfigParser.defaultConfiguration();
+        }
+
+        //c = new Clock(width, height); //TODO make clock constructor take HashMap
+    }
+
+    public static File currentDirectory() {
+        try {
+            return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
@@ -48,11 +76,11 @@ class Clock extends JFrame implements Runnable{
 
     static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
-    ImageIcon bgIcon = new ImageIcon(this.getClass().getResource("resources/jack-o-lantern.png"));
-    ImageIcon hourHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-yellow.png"));
-    ImageIcon minuteHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-blue.png"));
-    ImageIcon secondHandIcon = new ImageIcon(this.getClass().getResource("resources/broom-red.png"));
-    ImageIcon numbersIcon = new ImageIcon(this.getClass().getResource("resources/halloween-numbers.png"));
+    ImageIcon bgIcon = new ImageIcon(this.getClass().getResource("resources/background.png"));
+    ImageIcon hourHandIcon = new ImageIcon(this.getClass().getResource("resources/hour-hand.png"));
+    ImageIcon minuteHandIcon = new ImageIcon(this.getClass().getResource("resources/minute-hand.png"));
+    ImageIcon secondHandIcon = new ImageIcon(this.getClass().getResource("resources/second-hand.png"));
+    ImageIcon numbersIcon = new ImageIcon(this.getClass().getResource("resources/numbers.png"));
 
     Image secondHand, minuteHand, hourHand;
 
@@ -155,6 +183,7 @@ class Clock extends JFrame implements Runnable{
         setVisible(true);
         
         start();
+        digitalClock.setVisible(false);
         addKeyListener(new KeyListener() {
 
             @Override
@@ -354,11 +383,11 @@ class Clock extends JFrame implements Runnable{
             if (direction == 0) { //left
                 ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-right.png"));
                 //randomImageFlyBy(rem, 10);
-                add(new MovingImage(ghost, resolution, r.nextInt(15) + 5, null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
+                add(new MovingImage(ghost, resolution, (r.nextInt(15) + 5), null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
             } else { //right
                 ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-left.png"));
                 //randomImageFlyBy(rem, 10);
-                add(new MovingImage(ghost, resolution, r.nextInt(15) + 5, null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
+                add(new MovingImage(ghost, resolution, (r.nextInt(15) + 5), null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -368,7 +397,7 @@ class Clock extends JFrame implements Runnable{
     public void conjureSpoopy() {
         try {
             BufferedImage spoopy = ImageIO.read(this.getClass().getResource("resources/spoopy.png"));
-            add(new MovingImage(spoopy, resolution, r.nextInt(12) + 5, null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+            add(new MovingImage(spoopy, resolution, (r.nextInt(12) + 5), null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -377,7 +406,7 @@ class Clock extends JFrame implements Runnable{
     public void conjureTravis() {
         try {
             BufferedImage travis = ImageIO.read(this.getClass().getResource("resources/travis.png"));
-            add(new MovingImage(travis, resolution, r.nextInt(10) + 5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+            add(new MovingImage(travis, resolution, (r.nextInt(10) + 5), null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -388,7 +417,7 @@ class Clock extends JFrame implements Runnable{
         try {
             rem = ImageIO.read(this.getClass().getResource("resources/rem.png"));
             //randomImageFlyBy(rem, 10);
-            add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+            add(new MovingImage(rem, resolution, (r.nextInt(15)+5), null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -399,7 +428,7 @@ class Clock extends JFrame implements Runnable{
         try {
             rem = ImageIO.read(this.getClass().getResource("resources/rem-glowing.png"));
             //randomImageFlyBy(rem, 10);
-            add(new MovingImage(rem, resolution, r.nextInt(15)+5, null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+            add(new MovingImage(rem, resolution, (r.nextInt(15)+5), null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -554,6 +583,8 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
+                /*
+
                 if (r.nextInt(500) == 0) {
                     conjureGhost();
                 }
@@ -696,6 +727,7 @@ class Clock extends JFrame implements Runnable{
                         }
                     }
                 }
+                */
 
                 currentSecond = second;
                 deltaTime++;

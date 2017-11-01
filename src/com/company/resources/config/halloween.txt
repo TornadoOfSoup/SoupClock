@@ -1,0 +1,5 @@
+ResourcesFolder: resources/halloween
+DigitalClock: false
+FlyingImages: true
+BackgroundColor: 000000
+Framerate: 60

@@ -1,0 +1,5 @@
+ResourcesFolder: resources/default
+DigitalClock: false
+FlyingImages: false
+BackgroundColor: dddddd
+Framerate: 60
