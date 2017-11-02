@@ -37,7 +37,7 @@ public class Main {
 
         chooser.setCurrentDirectory(currentDirectory());
 
-        JOptionPane.showConfirmDialog(null, "Please select the desired configuration file.");
+        JOptionPane.showMessageDialog(null, "Please select the desired configuration file.", "Configuration", JOptionPane.INFORMATION_MESSAGE);
         int chooserReturnVal = chooser.showOpenDialog(null);
 
         HashMap<String, String> configHashMap;
@@ -50,11 +50,11 @@ public class Main {
                 System.out.println(line);
             }
         } else {
-            JOptionPane.showConfirmDialog(null, "Using default configuration.");
+            JOptionPane.showMessageDialog(null, "Using default configuration.", "Default", JOptionPane.INFORMATION_MESSAGE);
             configHashMap = ConfigParser.defaultConfiguration();
         }
 
-        //c = new Clock(width, height); //TODO make clock constructor take HashMap
+        c = new Clock(width, height, configHashMap);
     }
 
     public static File currentDirectory() {
@@ -76,11 +76,7 @@ class Clock extends JFrame implements Runnable{
 
     static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
-    ImageIcon bgIcon = new ImageIcon(this.getClass().getResource("resources/background.png"));
-    ImageIcon hourHandIcon = new ImageIcon(this.getClass().getResource("resources/hour-hand.png"));
-    ImageIcon minuteHandIcon = new ImageIcon(this.getClass().getResource("resources/minute-hand.png"));
-    ImageIcon secondHandIcon = new ImageIcon(this.getClass().getResource("resources/second-hand.png"));
-    ImageIcon numbersIcon = new ImageIcon(this.getClass().getResource("resources/numbers.png"));
+    ImageIcon bgIcon, hourHandIcon, minuteHandIcon, secondHandIcon, numbersIcon;
 
     Image secondHand, minuteHand, hourHand;
 
@@ -100,10 +96,23 @@ class Clock extends JFrame implements Runnable{
     boolean ghostAttack;
     boolean remAttack;
 
-    public Clock(int width, int height) {
+    HashMap<String, String> configHashMap;
+
+    public Clock(int width, int height, HashMap<String, String> configHashMap) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
         resolution[0] = width;
         resolution[1] = height;
+        this.configHashMap = configHashMap;
+
+        String resourceFolder = configHashMap.get("ResourcesFolder");
+
+        System.out.println(resourceFolder);
+
+        bgIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/background.png"));
+        hourHandIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/hour-hand.png"));
+        minuteHandIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/minute-hand.png"));
+        secondHandIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/second-hand.png"));
+        numbersIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/numbers.png"));
 
         initialFullscreen = true;
         doTickingSound = false;
@@ -118,7 +127,7 @@ class Clock extends JFrame implements Runnable{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(resolution[0], resolution[1]);
 
-        getContentPane().setBackground(Color.BLACK);
+        getContentPane().setBackground(Color.decode(configHashMap.get("BackgroundColor")));
 
         layeredPane.setLayout(new BorderLayout());
         layeredPane.setSize(this.getSize());
@@ -134,34 +143,44 @@ class Clock extends JFrame implements Runnable{
 
         invisibleLabel = new JLabel("");
 
+        
+        double hourHandRatio = (double) hourHandIcon.getImage().getHeight(null) / hourHandIcon.getImage().getWidth(null);
+        double minuteHandRatio = (double) minuteHandIcon.getImage().getHeight(null) / minuteHandIcon.getImage().getWidth(null);
+        double secondHandRatio = (double) secondHandIcon.getImage().getHeight(null) / secondHandIcon.getImage().getWidth(null);
+        
+
         Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
                 (int) Math.round(this.getWidth() * 0.5), Image.SCALE_DEFAULT);
 
         backgroundImage = new JLabel(new ImageIcon(background));
         backgroundImage.setBounds(0, 0, resolution[0], resolution[1]);
-
-        Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.55),
-                (int) Math.round(this.getWidth() * 0.55), Image.SCALE_DEFAULT);
+        
+        double hourHandLength = 0.25;
+        double minuteHandLength = 0.36;
+        double secondHandLength = 0.36;
+        
+        Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(background.getWidth(null) * 1),
+                (int) Math.round(background.getWidth(null) * 1), Image.SCALE_DEFAULT);
 
         numbersImage = new JLabel(new ImageIcon(numbers));
         numbersImage.setBounds(0, 0, resolution[0], resolution[1]);
         
-        hourHand = hourHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.16),
-                (int) Math.round(backgroundImage.getWidth() * 0.45), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
+        hourHand = hourHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * hourHandLength / hourHandRatio),
+                (int) Math.round(backgroundImage.getWidth() * hourHandLength), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         hourHandImage = new JLabel(new ImageIcon(hourHand));
         hourHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //hourPanel.add(hourHandImage);
         
-        minuteHand = minuteHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.12),
-                (int) Math.round(backgroundImage.getWidth() * 0.6), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
+        minuteHand = minuteHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * minuteHandLength / minuteHandRatio),
+                (int) Math.round(backgroundImage.getWidth() * minuteHandLength), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         minuteHandImage = new JLabel(new ImageIcon(minuteHand));
         minuteHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //minutePanel.add(minuteHandImage);
 
-        secondHand = secondHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * 0.08),
-                (int) Math.round(backgroundImage.getWidth() * 0.62), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
+        secondHand = secondHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * secondHandLength / secondHandRatio),
+                (int) Math.round(backgroundImage.getWidth() * secondHandLength), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
         secondHandImage = new JLabel(new ImageIcon(secondHand));
         secondHandImage.setBounds(0, 0, resolution[0], resolution[1]);
@@ -569,10 +588,12 @@ class Clock extends JFrame implements Runnable{
     @Override
     public void run() {
         int currentSecond = second;
+        int framerate = Integer.parseInt(configHashMap.get("Framerate"));
+        boolean doFlyingImages = Boolean.parseBoolean(configHashMap.get("FlyingImages"));
         while (true) {
             //run
             try {
-                Thread.sleep(1000/60);
+                Thread.sleep(1000/framerate);
                 updateTimeVars();
                 updateDigitalClock();
                 repaint();
@@ -583,22 +604,23 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
-                /*
 
-                if (r.nextInt(500) == 0) {
-                    conjureGhost();
-                }
+                if (doFlyingImages) {
+                    if (r.nextInt(500) == 0) {
+                        conjureGhost();
+                    }
 
-                if (r.nextInt(300 * 60) == 0) {
-                    conjureGlowingRem();
-                }
+                    if (r.nextInt(300 * 60) == 0) {
+                        conjureGlowingRem();
+                    }
 
-                if (r.nextInt(1000) == 0) {
-                    conjureSpoopy();
-                }
+                    if (r.nextInt(1000) == 0) {
+                        conjureSpoopy();
+                    }
 
-                if (r.nextInt(600 * 60) == 0) {
-                    conjureTravis();
+                    if (r.nextInt(600 * 60) == 0) {
+                        conjureTravis();
+                    }
                 }
 
                 if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
@@ -727,7 +749,7 @@ class Clock extends JFrame implements Runnable{
                         }
                     }
                 }
-                */
+
 
                 currentSecond = second;
                 deltaTime++;

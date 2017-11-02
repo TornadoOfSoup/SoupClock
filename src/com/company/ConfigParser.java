@@ -24,7 +24,7 @@ public class ConfigParser {
         configHashMap.put("ResourcesFolder", "resources/default");
         configHashMap.put("DigitalClock", "false");
         configHashMap.put("FlyingImages", "false");
-        configHashMap.put("BackgroundColor", "dddddd");
+        configHashMap.put("BackgroundColor", "#cabbbb");
         configHashMap.put("Framerate", "60");
         //configHashMap.put("", "");
 
@@ -56,7 +56,7 @@ public class ConfigParser {
         for (String line : linesOfConfigFile) {
             String[] parts = line.split(":");
             for (int i = 0; i < parts.length; i++) {
-                parts[i].trim();
+                parts[i] = parts[i].trim();
             }
             configHashMap.put(parts[0], parts[1]);
         }
