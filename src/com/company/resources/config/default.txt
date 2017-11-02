@@ -1,5 +1,6 @@
 ResourcesFolder: resources/default
 DigitalClock: false
+DigitalClockColor: #004469
 FlyingImages: false
 BackgroundColor: #cabbbb
 Framerate: 60

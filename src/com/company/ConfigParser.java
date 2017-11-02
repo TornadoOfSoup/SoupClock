@@ -23,6 +23,7 @@ public class ConfigParser {
 
         configHashMap.put("ResourcesFolder", "resources/default");
         configHashMap.put("DigitalClock", "false");
+        configHashMap.put("DigitalClockColor", "#004469");
         configHashMap.put("FlyingImages", "false");
         configHashMap.put("BackgroundColor", "#cabbbb");
         configHashMap.put("Framerate", "60");

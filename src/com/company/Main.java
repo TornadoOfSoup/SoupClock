@@ -21,12 +21,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        /*
-        int res1 = Integer.parseInt(JOptionPane.showInputDialog("Input first number of resolution: "));
-        int res2 = Integer.parseInt(JOptionPane.showInputDialog("Input second number of resoultion: "));
-        System.out.println("Resolution: " + res1 + " x " + res2);
-        */
-
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int) screenSize.getWidth();
         int height = (int) screenSize.getHeight();
@@ -93,8 +87,6 @@ class Clock extends JFrame implements Runnable{
 
     boolean initialFullscreen;
     boolean doTickingSound;
-    boolean ghostAttack;
-    boolean remAttack;
 
     HashMap<String, String> configHashMap;
 
@@ -136,7 +128,8 @@ class Clock extends JFrame implements Runnable{
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
         digitalClock.setFont(new Font("Courier New", Font.BOLD, 40));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
-        digitalClock.setForeground(new Color(200, 0, 0, 150));
+        //digitalClock.setForeground(new Color(200, 0, 0, 150));
+        digitalClock.setForeground(Color.decode(configHashMap.get("DigitalClockColor")));
         digitalClock.setBackground(new Color(0, 0, 0, 0));
         digitalClock.setOpaque(false);
         add(digitalClock, BorderLayout.AFTER_LAST_LINE);
