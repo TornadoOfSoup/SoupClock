@@ -1,6 +1,7 @@
 ResourcesFolder: resources/halloween
 DigitalClock: false
 DigitalClockColor: #690000
+DigitalClockFont: Courier New
 FlyingImages: true
 BackgroundColor: #000000
 Framerate: 60

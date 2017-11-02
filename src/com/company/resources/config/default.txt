@@ -1,6 +1,7 @@
 ResourcesFolder: resources/default
 DigitalClock: false
 DigitalClockColor: #004469
+DigitalClockFont: Courier New
 FlyingImages: false
 BackgroundColor: #cabbbb
 Framerate: 60

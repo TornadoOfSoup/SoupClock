@@ -73,7 +73,7 @@ class Clock extends JFrame implements Runnable{
     ImageIcon bgIcon, hourHandIcon, minuteHandIcon, secondHandIcon, numbersIcon;
 
     Image secondHand, minuteHand, hourHand;
-
+    String digitalClockFont;
 
     JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock, invisibleLabel;
 
@@ -88,7 +88,10 @@ class Clock extends JFrame implements Runnable{
     boolean initialFullscreen;
     boolean doTickingSound;
 
+    RenderingHints antiAliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
     HashMap<String, String> configHashMap;
+
 
     public Clock(int width, int height, HashMap<String, String> configHashMap) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
@@ -97,6 +100,7 @@ class Clock extends JFrame implements Runnable{
         this.configHashMap = configHashMap;
 
         String resourceFolder = configHashMap.get("ResourcesFolder");
+        digitalClockFont = configHashMap.get("DigitalClockFont");
 
         System.out.println(resourceFolder);
 
@@ -126,7 +130,7 @@ class Clock extends JFrame implements Runnable{
         layeredPane.setBackground(Color.BLACK);
 
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
-        digitalClock.setFont(new Font("Courier New", Font.BOLD, 40));
+        digitalClock.setFont(new Font(digitalClockFont, Font.BOLD, 40));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
         //digitalClock.setForeground(new Color(200, 0, 0, 150));
         digitalClock.setForeground(Color.decode(configHashMap.get("DigitalClockColor")));
@@ -268,10 +272,11 @@ class Clock extends JFrame implements Runnable{
                 biHour = toBufferedImage(hourHand);
 
                 Graphics2D g2dHours = (Graphics2D) g;
+                g2dHours.setRenderingHints(antiAliasing);
+
                 g2dHours.rotate(Math.toRadians(((hour - 0) * 30) + (minute * 0.5)), getWidth() / 2, getHeight() / 2);
                 g2dHours.drawImage(biHour, (getWidth() - biHour.getWidth(null)) / 2,
                         (getHeight() - biHour.getHeight(null)) / 2, null);
-
             }
         };
         hourPanel.setBackground(new Color(0, 0,0, 0));
@@ -293,10 +298,11 @@ class Clock extends JFrame implements Runnable{
                 biMinute = toBufferedImage(minuteHand);
 
                 Graphics2D g2dMinutes = (Graphics2D) g;
+                g2dMinutes.setRenderingHints(antiAliasing);
+
                 g2dMinutes.rotate(Math.toRadians(minute * 6), getWidth() / 2, getHeight() / 2);
                 g2dMinutes.drawImage(biMinute, (getWidth() - biMinute.getWidth(null)) / 2,
                         (getHeight() - biMinute.getHeight(null)) / 2, null);
-
             }
         };
         minutePanel.setBackground(new Color(0, 0,0, 0));
@@ -318,10 +324,11 @@ class Clock extends JFrame implements Runnable{
                 biSecond = toBufferedImage(secondHand);
 
                 Graphics2D g2dSeconds = (Graphics2D) g;
+                g2dSeconds.setRenderingHints(antiAliasing);
+
                 g2dSeconds.rotate(Math.toRadians(second * 6), getWidth() / 2, getHeight() / 2);
                 g2dSeconds.drawImage(biSecond, (getWidth() - biSecond.getWidth(null)) / 2,
                         (getHeight() - biSecond.getHeight(null)) / 2, null);
-
             }
         };
         secondPanel.setBackground(new Color(0, 0,0, 0));
@@ -549,6 +556,11 @@ class Clock extends JFrame implements Runnable{
         if (strSecond.length() == 1) {
             strSecond = "0" + strSecond;
         }
+
+        if (strHour.equals("00")) { //if it's 12 o'clock don't display 00
+            strHour = "12";
+        }
+
         digitalClock.setText(strHour + ":" + strMinute + ":" + strSecond + " " + amOrPM);
     }
 
