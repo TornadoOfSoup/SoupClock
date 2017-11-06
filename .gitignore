@@ -1,1 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
+.idea/workspace.xml
+src/com/company/resources/default/Thumbs.db
+!/out/artifacts/clock_jar/clock.jar

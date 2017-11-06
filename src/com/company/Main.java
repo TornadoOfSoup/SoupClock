@@ -152,9 +152,9 @@ class Clock extends JFrame implements Runnable{
         backgroundImage = new JLabel(new ImageIcon(background));
         backgroundImage.setBounds(0, 0, resolution[0], resolution[1]);
         
-        double hourHandLength = 0.25;
-        double minuteHandLength = 0.36;
-        double secondHandLength = 0.36;
+        double hourHandLength = Double.parseDouble(configHashMap.get("HourHandLength"));
+        double minuteHandLength = Double.parseDouble(configHashMap.get("MinuteHandLength"));
+        double secondHandLength = Double.parseDouble(configHashMap.get("SecondHandLength"));
         
         Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(background.getWidth(null) * 1),
                 (int) Math.round(background.getWidth(null) * 1), Image.SCALE_DEFAULT);
