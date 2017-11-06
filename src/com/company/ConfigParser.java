@@ -63,7 +63,9 @@ public class ConfigParser {
             for (int i = 0; i < parts.length; i++) {
                 parts[i] = parts[i].trim();
             }
-            configHashMap.put(parts[0], parts[1]);
+            if (!line.isEmpty() && !line.startsWith("//")) { //ignore empty lines and commented out lines
+                configHashMap.put(parts[0], parts[1]);
+            }
         }
         return configHashMap;
     }

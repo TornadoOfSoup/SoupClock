@@ -67,6 +67,7 @@ class Clock extends JFrame implements Runnable{
     private Thread thread;
 
     static Random r = new Random();
+    static String resourceFolder;
 
     static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
@@ -99,7 +100,7 @@ class Clock extends JFrame implements Runnable{
         resolution[1] = height;
         this.configHashMap = configHashMap;
 
-        String resourceFolder = configHashMap.get("ResourcesFolder");
+        resourceFolder = configHashMap.get("ResourcesFolder");
         digitalClockFont = configHashMap.get("DigitalClockFont");
 
         System.out.println(resourceFolder);
@@ -400,11 +401,11 @@ class Clock extends JFrame implements Runnable{
         try {
             int direction = r.nextInt(2);
             if (direction == 0) { //left
-                ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-right.png"));
+                ghost = ImageIO.read(this.getClass().getResource(resourceFolder + "/ghost-moving-right.png"));
                 //randomImageFlyBy(rem, 10);
                 add(new MovingImage(ghost, resolution, (r.nextInt(15) + 5), null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.LEFT_TO_RIGHT), BorderLayout.CENTER, layeredPane.highestLayer());
             } else { //right
-                ghost = ImageIO.read(this.getClass().getResource("resources/ghost-moving-left.png"));
+                ghost = ImageIO.read(this.getClass().getResource(resourceFolder + "/ghost-moving-left.png"));
                 //randomImageFlyBy(rem, 10);
                 add(new MovingImage(ghost, resolution, (r.nextInt(15) + 5), null, (r.nextFloat() + 0.2f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RIGHT_TO_LEFT), BorderLayout.CENTER, layeredPane.highestLayer());
             }
@@ -415,7 +416,7 @@ class Clock extends JFrame implements Runnable{
 
     public void conjureSpoopy() {
         try {
-            BufferedImage spoopy = ImageIO.read(this.getClass().getResource("resources/spoopy.png"));
+            BufferedImage spoopy = ImageIO.read(this.getClass().getResource(resourceFolder + "/spoopy.png"));
             add(new MovingImage(spoopy, resolution, (r.nextInt(12) + 5), null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -424,7 +425,7 @@ class Clock extends JFrame implements Runnable{
 
     public void conjureTravis() {
         try {
-            BufferedImage travis = ImageIO.read(this.getClass().getResource("resources/travis.png"));
+            BufferedImage travis = ImageIO.read(this.getClass().getResource(resourceFolder + "/travis.png"));
             add(new MovingImage(travis, resolution, (r.nextInt(10) + 5), null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -434,7 +435,7 @@ class Clock extends JFrame implements Runnable{
     public void conjureRem() {
         BufferedImage rem = null;
         try {
-            rem = ImageIO.read(this.getClass().getResource("resources/rem.png"));
+            rem = ImageIO.read(this.getClass().getResource(resourceFolder + "/rem.png"));
             //randomImageFlyBy(rem, 10);
             add(new MovingImage(rem, resolution, (r.nextInt(15)+5), null, (r.nextFloat() + 0.3f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
@@ -445,9 +446,32 @@ class Clock extends JFrame implements Runnable{
     public void conjureGlowingRem() {
         BufferedImage rem = null;
         try {
-            rem = ImageIO.read(this.getClass().getResource("resources/rem-glowing.png"));
+            rem = ImageIO.read(this.getClass().getResource(resourceFolder + "/rem-glowing.png"));
             //randomImageFlyBy(rem, 10);
             add(new MovingImage(rem, resolution, (r.nextInt(15)+5), null, (r.nextFloat() + 0.7f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void conjureFlyingImage(String path) {
+        try {
+            BufferedImage image = ImageIO.read(this.getClass().getResource(path));
+            add(new MovingImage(image, resolution, (r.nextInt(12) + 5), null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void conjureFlyingImage(String[] imageArgs) {
+        try {
+            //todo get variables from imageArgs here
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedImage image = ImageIO.read(this.getClass().getResource(imageArgs[0]));
+            add(new MovingImage(image, resolution, (r.nextInt(12) + 5), null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -627,6 +651,10 @@ class Clock extends JFrame implements Runnable{
                         conjureTravis();
                     }
                 }
+
+//                if (doFlyingImages) {
+//                    if (r.nextInt(framerate / likelihood) == 0)
+//                }
 
                 if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
                     if (second >= 0 && second <= 10) {
