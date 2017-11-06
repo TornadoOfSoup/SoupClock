@@ -5,6 +5,14 @@ DigitalClockFont: Courier New
 HourHandLength: 0.25
 MinuteHandLength: 0.36
 SecondHandLength: 0.36
-FlyingImages: false
+FlyingImages: true
 BackgroundColor: #cabbbb
 Framerate: 60
+
+// format for RandomImages is: [path], [average number of seconds between each image], [side the image starts on], [range of speed], [range of opacity]
+// all random images must be on the same line, separated by a "|"
+// for starting side, use either "left", "right", or "random".
+// for the ranges, provide lower and upper bound -- ex: 5-10 for a number between 5 and 10
+// for speed, numbers must be integers; for opacity, numbers must be decimals between 0 and 1
+
+RandomImages: resources/default/a.jpg, 5, random, 12-20, 0.3-0.8

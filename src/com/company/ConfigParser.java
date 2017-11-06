@@ -31,6 +31,7 @@ public class ConfigParser {
         configHashMap.put("FlyingImages", "false");
         configHashMap.put("BackgroundColor", "#cabbbb");
         configHashMap.put("Framerate", "60");
+        configHashMap.put("RandomImages", "");
         //configHashMap.put("", "");
 
         return configHashMap;

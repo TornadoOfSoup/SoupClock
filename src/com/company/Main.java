@@ -619,6 +619,7 @@ class Clock extends JFrame implements Runnable{
         int currentSecond = second;
         int framerate = Integer.parseInt(configHashMap.get("Framerate"));
         boolean doFlyingImages = Boolean.parseBoolean(configHashMap.get("FlyingImages"));
+        String[] images = configHashMap.get("RandomImages").split("\\|");
         while (true) {
             //run
             try {
@@ -633,6 +634,7 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
+/*
 
                 if (doFlyingImages) {
                     if (r.nextInt(500) == 0) {
@@ -651,10 +653,22 @@ class Clock extends JFrame implements Runnable{
                         conjureTravis();
                     }
                 }
+*/
 
 //                if (doFlyingImages) {
 //                    if (r.nextInt(framerate / likelihood) == 0)
 //                }
+
+                if (doFlyingImages) {
+                    for (String image : images) {
+                        String[] imageArgs = image.split(", ");
+                        if (imageArgs.length == 5) {
+                            if (r.nextInt((int) Math.round(framerate * Double.parseDouble(imageArgs[1]))) == 0) {
+                                conjureFlyingImage(imageArgs);
+                            }
+                        }
+                    }
+                }
 
                 if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
                     if (second >= 0 && second <= 10) {
