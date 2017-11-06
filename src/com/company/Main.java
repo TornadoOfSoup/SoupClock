@@ -464,17 +464,53 @@ class Clock extends JFrame implements Runnable{
     }
 
     public void conjureFlyingImage(String[] imageArgs) {
+        String path = "", startingSide = "";
+        String[] speedBounds = new String[0], opacityBounds = new String[0];
         try {
-            //todo get variables from imageArgs here
+            path = imageArgs[0];
+            startingSide = imageArgs[2];
+            speedBounds = imageArgs[3].split("-");
+            opacityBounds = imageArgs[4].split("-");
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
         try {
-            BufferedImage image = ImageIO.read(this.getClass().getResource(imageArgs[0]));
-            add(new MovingImage(image, resolution, (r.nextInt(12) + 5), null, (r.nextFloat() + 0.5f) / 2, MovingImage.DIE_WHEN_OFF_SCREEN, MovingImage.RANDOM_DIRECTION), BorderLayout.CENTER, layeredPane.highestLayer());
+            int direction;
+            if (startingSide.equalsIgnoreCase("left")) {
+                direction = MovingImage.LEFT_TO_RIGHT;
+            } else if (startingSide.equalsIgnoreCase("right")) {
+                direction = MovingImage.RIGHT_TO_LEFT;
+            } else {
+                direction = MovingImage.RANDOM_DIRECTION;
+            }
+            int lowerSpeedBound = Integer.parseInt(speedBounds[0]);
+            int upperSpeedBound = Integer.parseInt(speedBounds[1]);
+
+            float lowerOpacityBound = Float.parseFloat(opacityBounds[0]);
+            float upperOpacityBound = Float.parseFloat(opacityBounds[1]);
+            
+            BufferedImage image = ImageIO.read(this.getClass().getResource(path));
+            add(new MovingImage(image, resolution, (r.nextInt(upperSpeedBound - lowerSpeedBound) + lowerSpeedBound), null,
+                    randomNumberBetweenTwoFloats(lowerOpacityBound, upperOpacityBound), MovingImage.DIE_WHEN_OFF_SCREEN, direction), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+            for (String s : imageArgs) {
+                System.out.println(s);
+            }
         }
+    }
+
+    public float randomNumberBetweenTwoFloats (float f1, float f2) {
+        f1 *= 10000;
+        f2 *= 10000;
+
+        int one = (int) f1;
+        int two = (int) f2;
+
+        int randInt = r.nextInt(two - one) + one;
+        return (float) randInt / 10000;
     }
 
     public void initClockHands_NONWORKING() {
@@ -620,6 +656,11 @@ class Clock extends JFrame implements Runnable{
         int framerate = Integer.parseInt(configHashMap.get("Framerate"));
         boolean doFlyingImages = Boolean.parseBoolean(configHashMap.get("FlyingImages"));
         String[] images = configHashMap.get("RandomImages").split("\\|");
+
+        for (int i = 0; i < images.length; i++) {
+            images[i] = images[i].trim();
+        }
+
         while (true) {
             //run
             try {
@@ -670,6 +711,8 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
+
+                /*
                 if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
                     if (second >= 0 && second <= 10) {
                         conjureGhost();
@@ -797,7 +840,7 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
-
+*/
                 currentSecond = second;
                 deltaTime++;
             } catch (InterruptedException e) {
