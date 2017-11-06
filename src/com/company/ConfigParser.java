@@ -29,9 +29,9 @@ public class ConfigParser {
         configHashMap.put("MinuteHandLength", "0.36");
         configHashMap.put("SecondHandLength", "0.36");
         configHashMap.put("FlyingImages", "false");
-        configHashMap.put("BackgroundColor", "#cabbbb");
+        configHashMap.put("BackgroundColor", "#46494e");
         configHashMap.put("Framerate", "60");
-        configHashMap.put("RandomImages", "");
+        configHashMap.put("RandomImages", "resources/default/a.jpg, 5, random, 12-15, 0.3-0.8 | resources/default/b.png, 8, random, 20-28, 0.6-1.0");
         //configHashMap.put("", "");
 
         return configHashMap;

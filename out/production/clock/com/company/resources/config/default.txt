@@ -6,7 +6,7 @@ HourHandLength: 0.25
 MinuteHandLength: 0.36
 SecondHandLength: 0.36
 FlyingImages: false
-BackgroundColor: #36393e
+BackgroundColor: #46494e
 Framerate: 60
 
 // format for RandomImages is: [path], [average number of seconds between each image], [side the image starts on], [range of speed], [range of opacity]

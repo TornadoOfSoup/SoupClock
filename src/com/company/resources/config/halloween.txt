@@ -15,4 +15,4 @@ Framerate: 60
 // for the ranges, provide lower and upper bound -- ex: 5-10 for a number between 5 and 10
 // for speed, numbers must be integers; for opacity, numbers must be decimals between 0 and 1
 
-RandomImages: resources/halloween/spoopy.png, 17, left, 12-17,  0.3-0.8 | resources/halloween/rem.png, 600, left, 12-17,  0.3-0.8 | resources/halloween/travis.png, 600, left, 12-17,  0.3-0.8 |
+RandomImages: resources/halloween/spoopy.png, 17, random, 12-17,  0.3-0.8 | resources/halloween/rem-glowing.png, 600, random, 10-20,  0.5-1.0 | resources/halloween/travis.png, 600, random, 8-15,  0.25-0.7 | resources/halloween/ghost-moving-left.png, 5, left, 10-20,  0.2-0.7 | resources/halloween/ghost-moving-right.png, 5, right, 10-20,  0.2-0.7
