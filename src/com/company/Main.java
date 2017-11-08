@@ -80,10 +80,10 @@ class Clock extends JFrame implements Runnable{
 
     Image secondHand, minuteHand, hourHand;
     String digitalClockFont;
-    JPanel guiPanel, schedulePanel;
+    JPanel guiPanel, schedulePanel, datePanel;
 
     JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock,
-            invisibleLabel;
+            invisibleLabel, dateLabel;
 
     BufferedImage biSecond, biMinute, biHour;
     //JPanel handsPanel;
@@ -91,7 +91,7 @@ class Clock extends JFrame implements Runnable{
     Calendar calendar = GregorianCalendar.getInstance();
 
     Date date = new Date(System.currentTimeMillis());
-    int second, minute, hour, deltaTime, amOrPM;
+    int second, minute, hour, deltaTime, amOrPM, year, month, day;
 
     boolean initialFullscreen;
     boolean doTickingSound;
@@ -153,15 +153,13 @@ class Clock extends JFrame implements Runnable{
         digitalClock.setForeground(Color.decode(configHashMap.get("DigitalClockColor")));
         digitalClock.setBackground(new Color(0, 0, 0, 0));
         digitalClock.setOpaque(false);
-        add(digitalClock, BorderLayout.AFTER_LAST_LINE);
+        add(digitalClock, BorderLayout.SOUTH);
 
         invisibleLabel = new JLabel("");
 
-        
         double hourHandRatio = (double) hourHandIcon.getImage().getHeight(null) / hourHandIcon.getImage().getWidth(null);
         double minuteHandRatio = (double) minuteHandIcon.getImage().getHeight(null) / minuteHandIcon.getImage().getWidth(null);
         double secondHandRatio = (double) secondHandIcon.getImage().getHeight(null) / secondHandIcon.getImage().getWidth(null);
-        
 
         Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
                 (int) Math.round(this.getWidth() * 0.5), Image.SCALE_DEFAULT);
@@ -264,6 +262,8 @@ class Clock extends JFrame implements Runnable{
                     conjureTravis();
                 } else if (e.getKeyChar() == '9') {
                     digitalClock.setText("Made by TornadoOfSoup");
+                } else if (e.getKeyChar() == 'd') {
+                    dateLabel.setVisible(!dateLabel.isVisible());
                 }
             }
 
@@ -281,6 +281,8 @@ class Clock extends JFrame implements Runnable{
         guiPanel.setBackground(new Color(0, 0, 0, 0));
 
         createSchedulePanel();
+        createDatePanel();
+
         add(guiPanel);
     }
 
@@ -329,6 +331,20 @@ class Clock extends JFrame implements Runnable{
 
         schedulePanel.add(Box.createVerticalGlue());
         guiPanel.add(schedulePanel);
+    }
+
+    public void createDatePanel() {
+        datePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        datePanel.setOpaque(false);
+        datePanel.setBackground(new Color(0, 0, 0, 0));
+
+        dateLabel = new JLabel(month + "/" + day + "/" + year);
+        dateLabel.setForeground(Color.decode(configHashMap.get("DigitalClockColor")));
+        dateLabel.setFont(new Font(digitalClockFont, Font.BOLD, Integer.parseInt(configHashMap.get("DigitalClockSize"))));
+
+        datePanel.add(dateLabel);
+
+        guiPanel.add(datePanel, BorderLayout.SOUTH);
     }
     
     public void createClockHands() {
@@ -664,6 +680,10 @@ class Clock extends JFrame implements Runnable{
         hour = calendar.get(Calendar.HOUR);
         amOrPM = calendar.get(Calendar.AM_PM);
 
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+
         //System.out.println(hour + ":" + minute + ":" + second);
     }
 
@@ -696,6 +716,10 @@ class Clock extends JFrame implements Runnable{
         }
 
         digitalClock.setText(strHour + ":" + strMinute + ":" + strSecond + " " + amOrPM);
+    }
+
+    public void updateDate() {
+        dateLabel.setText(month + "/" + day + "/" + year);
     }
 
     /**
@@ -744,7 +768,7 @@ class Clock extends JFrame implements Runnable{
                 Thread.sleep(1000/framerate);
                 updateTimeVars();
                 updateDigitalClock();
-                repaint();
+                updateDate();
 
                 if (doTickingSound) {
                     if (currentSecond != second) {
@@ -921,6 +945,7 @@ class Clock extends JFrame implements Runnable{
 */
                 currentSecond = second;
                 deltaTime++;
+                repaint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -9,7 +9,7 @@
 
 ResourcesFolder: resources/default
 DigitalClock: false
-DigitalClockColor: #004469
+DigitalClockColor: #3dd7e7
 DigitalClockFont: Courier New
 DigitalClockSize: 40
 Schedule: true
