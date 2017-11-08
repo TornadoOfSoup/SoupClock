@@ -9,14 +9,14 @@
 
 ResourcesFolder: resources/default
 DigitalClock: false
-DigitalClockColor: #3dd7e7
+DigitalClockColor: #00ff00
 DigitalClockFont: Courier New
 DigitalClockSize: 40
 Schedule: true
-ScheduleColor: #ffffff
+ScheduleColor: #00ff00
 ScheduleFont: Consolas
 ScheduleSize: 28
-PeriodHighlightColor: #4dd7f9
+PeriodHighlightColor: #000000
 HourHandLength: 0.25
 MinuteHandLength: 0.36
 SecondHandLength: 0.36

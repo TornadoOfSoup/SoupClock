@@ -93,6 +93,8 @@ class Clock extends JFrame implements Runnable{
     Date date = new Date(System.currentTimeMillis());
     int second, minute, hour, deltaTime, amOrPM, year, month, day;
 
+    int scheduleSize;
+
     boolean initialFullscreen;
     boolean doTickingSound;
 
@@ -129,6 +131,7 @@ class Clock extends JFrame implements Runnable{
                 "(0 for none, 1 for normal, 2 for H Period at beginning of day, 3 for H Period at end of day"));
 
         schedule = new Schedule(scheduleNumber);
+        scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
 
         initFrame();
     }
@@ -264,6 +267,12 @@ class Clock extends JFrame implements Runnable{
                     digitalClock.setText("Made by TornadoOfSoup");
                 } else if (e.getKeyChar() == 'd') {
                     dateLabel.setVisible(!dateLabel.isVisible());
+                } else if (e.getKeyChar() == '[') {
+                    scheduleSize++;
+                } else if (e.getKeyChar() == ']') {
+                    scheduleSize--;
+                } else if (e.getKeyChar() == '\\') {
+                    scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
                 }
             }
 
@@ -292,7 +301,7 @@ class Clock extends JFrame implements Runnable{
         schedulePanel.setOpaque(false);
         schedulePanel.setBackground(new Color(0, 0, 0, 0));
         Color periodLabelColor = Color.decode(configHashMap.get("ScheduleColor"));
-        Font periodFont = new Font(configHashMap.get("ScheduleFont"), Font.PLAIN, Integer.parseInt(configHashMap.get("ScheduleSize")));
+        Font periodFont = new Font(configHashMap.get("ScheduleFont"), Font.PLAIN, scheduleSize);
 
         schedulePeriods = schedule.getPeriods();
 
@@ -764,6 +773,7 @@ class Clock extends JFrame implements Runnable{
 
         while (true) {
             //run
+            Font periodFont = new Font(configHashMap.get("ScheduleFont"), Font.PLAIN, scheduleSize);
             try {
                 Thread.sleep(1000/framerate);
                 updateTimeVars();
@@ -795,6 +805,8 @@ class Clock extends JFrame implements Runnable{
                         //System.out.println(times[0] + "   |   " + times[1]);
                         Time startTime = parseTimeWithMeridian(times[0].replace(" ", ""));
                         Time endTime = parseTimeWithMeridian(times[1].replace(" ", ""));
+
+                        label.setFont(periodFont);
 
                         Time currentTime;
                         if (amOrPM == Calendar.PM) {

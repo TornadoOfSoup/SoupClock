@@ -55,8 +55,8 @@ public class Schedule {
             periods.put("G", new Period(parseTime("14:03"), parseTime("14:45")));
         } else if (schedule == TEST_SCHEDULE) {
             periods.put("A", new Period(parseTime("00:00"), parseTime("01:00")));
-            periods.put("B", new Period(parseTime("02:07"), parseTime("02:08")));
-            periods.put("C", new Period(parseTime("02:08"), parseTime("02:09")));
+            periods.put("B", new Period(parseTime("11:53"), parseTime("11:54")));
+            periods.put("C", new Period(parseTime("11:54"), parseTime("11:55")));
         }
     }
 
