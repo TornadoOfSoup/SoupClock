@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Key;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
+
+import static com.company.Utils.multiplyString;
+import static com.company.Utils.parseTime;
+import static com.company.Utils.parseTimeWithMeridian;
 
 public class Main {
 
@@ -75,8 +80,10 @@ class Clock extends JFrame implements Runnable{
 
     Image secondHand, minuteHand, hourHand;
     String digitalClockFont;
+    JPanel guiPanel, schedulePanel;
 
-    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock, invisibleLabel;
+    JLabel backgroundImage, numbersImage, hourHandImage, minuteHandImage, secondHandImage, digitalClock,
+            invisibleLabel;
 
     BufferedImage biSecond, biMinute, biHour;
     //JPanel handsPanel;
@@ -92,6 +99,10 @@ class Clock extends JFrame implements Runnable{
     RenderingHints antiAliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     HashMap<String, String> configHashMap;
+    HashMap<String, Period> schedulePeriods;
+    Schedule schedule;
+
+    ArrayList<JLabel> periods = new ArrayList<>();
 
 
     public Clock(int width, int height, HashMap<String, String> configHashMap) {
@@ -114,6 +125,11 @@ class Clock extends JFrame implements Runnable{
         initialFullscreen = true;
         doTickingSound = false;
 
+        int scheduleNumber = Integer.parseInt(JOptionPane.showInputDialog("Please input a number representing which schedule you want to use.\n" +
+                "(0 for none, 1 for normal, 2 for H Period at beginning of day, 3 for H Period at end of day"));
+
+        schedule = new Schedule(scheduleNumber);
+
         initFrame();
     }
 
@@ -131,7 +147,7 @@ class Clock extends JFrame implements Runnable{
         layeredPane.setBackground(Color.BLACK);
 
         digitalClock = new JLabel(hour + ":" + minute + ":" + second);
-        digitalClock.setFont(new Font(digitalClockFont, Font.BOLD, 40));
+        digitalClock.setFont(new Font(digitalClockFont, Font.BOLD, Integer.parseInt(configHashMap.get("DigitalClockSize"))));
         digitalClock.setSize(getWidth() / 12, getWidth() / 36);
         //digitalClock.setForeground(new Color(200, 0, 0, 150));
         digitalClock.setForeground(Color.decode(configHashMap.get("DigitalClockColor")));
@@ -198,9 +214,11 @@ class Clock extends JFrame implements Runnable{
 
         setUndecorated(initialFullscreen); //makes it fullscreen
         setVisible(true);
-        
+
+        createGUI();
+
         start();
-        digitalClock.setVisible(false);
+        digitalClock.setVisible(Boolean.parseBoolean(configHashMap.get("DigitalClock")));
         addKeyListener(new KeyListener() {
 
             @Override
@@ -255,6 +273,62 @@ class Clock extends JFrame implements Runnable{
         });
 
 
+    }
+
+    public void createGUI() {
+        guiPanel = new JPanel(new BorderLayout());
+        guiPanel.setOpaque(false);
+        guiPanel.setBackground(new Color(0, 0, 0, 0));
+
+        createSchedulePanel();
+        add(guiPanel);
+    }
+
+    public void createSchedulePanel() {
+        schedulePanel = new JPanel();
+        schedulePanel.setLayout(new BoxLayout(schedulePanel, BoxLayout.Y_AXIS));
+        schedulePanel.setOpaque(false);
+        schedulePanel.setBackground(new Color(0, 0, 0, 0));
+        Color periodLabelColor = Color.decode(configHashMap.get("ScheduleColor"));
+        Font periodFont = new Font(configHashMap.get("ScheduleFont"), Font.PLAIN, Integer.parseInt(configHashMap.get("ScheduleSize")));
+
+        schedulePeriods = schedule.getPeriods();
+
+        int longestEntryLength = 0;
+
+        for (Map.Entry<String, Period> entry : schedulePeriods.entrySet()) {
+            if (entry.getKey().length() > longestEntryLength) {
+                longestEntryLength = entry.getKey().length();
+            }
+        }
+
+        for (Map.Entry<String, Period> entry : schedulePeriods.entrySet()) {
+            String periodName = entry.getKey();
+            Period period = entry.getValue();
+
+            int numOfSpaces = longestEntryLength - (periodName.length()) + 2;
+
+            if (numOfSpaces < 1) {
+                numOfSpaces = 1;
+            }
+
+            JLabel label = new JLabel(periodName + ": ".replace(" ",
+                    multiplyString(" ", numOfSpaces)) + period.toString() + " ");
+            label.setForeground(periodLabelColor);
+            label.setFont(periodFont);
+            label.setOpaque(true);
+            label.setAlignmentY(Component.CENTER_ALIGNMENT);
+            periods.add(label);
+        }
+
+        schedulePanel.add(Box.createVerticalGlue());
+
+        for (JLabel label : periods) {
+            schedulePanel.add(label, BorderLayout.WEST);
+        }
+
+        schedulePanel.add(Box.createVerticalGlue());
+        guiPanel.add(schedulePanel);
     }
     
     public void createClockHands() {
@@ -655,7 +729,10 @@ class Clock extends JFrame implements Runnable{
         int currentSecond = second;
         int framerate = Integer.parseInt(configHashMap.get("Framerate"));
         boolean doFlyingImages = Boolean.parseBoolean(configHashMap.get("FlyingImages"));
+        boolean doSchedule = Boolean.parseBoolean(configHashMap.get("Schedule"));
         String[] images = configHashMap.get("RandomImages").split("\\|");
+        Color periodHighlightColor = Color.decode(configHashMap.get("PeriodHighlightColor"));
+        periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
 
         for (int i = 0; i < images.length; i++) {
             images[i] = images[i].trim();
@@ -675,30 +752,6 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
-/*
-
-                if (doFlyingImages) {
-                    if (r.nextInt(500) == 0) {
-                        conjureGhost();
-                    }
-
-                    if (r.nextInt(300 * 60) == 0) {
-                        conjureGlowingRem();
-                    }
-
-                    if (r.nextInt(1000) == 0) {
-                        conjureSpoopy();
-                    }
-
-                    if (r.nextInt(600 * 60) == 0) {
-                        conjureTravis();
-                    }
-                }
-*/
-
-//                if (doFlyingImages) {
-//                    if (r.nextInt(framerate / likelihood) == 0)
-//                }
 
                 if (doFlyingImages) {
                     for (String image : images) {
@@ -707,6 +760,31 @@ class Clock extends JFrame implements Runnable{
                             if (r.nextInt((int) Math.round(framerate * Double.parseDouble(imageArgs[1]))) == 0) {
                                 conjureFlyingImage(imageArgs);
                             }
+                        }
+                    }
+                }
+
+                if (doSchedule) {
+                    for (JLabel label : periods) {
+                        String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
+                                .split(" - "); //should get the times of the period
+                        //System.out.println(times[0] + "   |   " + times[1]);
+                        Time startTime = parseTimeWithMeridian(times[0].replace(" ", ""));
+                        Time endTime = parseTimeWithMeridian(times[1].replace(" ", ""));
+
+                        Time currentTime;
+                        if (amOrPM == Calendar.PM) {
+                            currentTime = parseTime((hour + 12) + ":" + minute + ":" + second);
+                        } else {
+                            currentTime = parseTime(hour + ":" + minute + ":" + second);
+                        }
+                        if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(endTime)) {
+                            int index = periods.indexOf(label);
+                            //System.out.println("time in period " + index);
+                            label.setBackground(periodHighlightColor);
+                            periods.set(index, label);
+                        } else {
+                            label.setBackground(new Color(0, 0, 0, 0));
                         }
                     }
                 }

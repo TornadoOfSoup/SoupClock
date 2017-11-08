@@ -25,6 +25,12 @@ public class ConfigParser {
         configHashMap.put("DigitalClock", "false");
         configHashMap.put("DigitalClockColor", "#004469");
         configHashMap.put("DigitalClockFont", "Courier New");
+        configHashMap.put("DigitalClockSize", "40");
+        configHashMap.put("Schedule", "true");
+        configHashMap.put("ScheduleColor", "#ffffff");
+        configHashMap.put("ScheduleFont", "Consolas");
+        configHashMap.put("ScheduleSize", "28");
+        configHashMap.put("PeriodHighlightColor", "#4dd7f9");
         configHashMap.put("HourHandLength", "0.25");
         configHashMap.put("MinuteHandLength", "0.36");
         configHashMap.put("SecondHandLength", "0.36");

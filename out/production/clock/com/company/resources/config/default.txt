@@ -1,7 +1,22 @@
+// all colors are hex color codes, they must be prefixed with a "#"
+// for digital clock and schedule, monospaced fonts are recommended
+
+// lines can be commented out with "//" which allows you to try new
+//   configurations without deleting old ones
+// you can also use them to leave yourself notes
+
+// remove or comment out lines you want to be set to defaults
+
 ResourcesFolder: resources/default
 DigitalClock: false
 DigitalClockColor: #004469
 DigitalClockFont: Courier New
+DigitalClockSize: 40
+Schedule: true
+ScheduleColor: #ffffff
+ScheduleFont: Consolas
+ScheduleSize: 28
+PeriodHighlightColor: #4dd7f9
 HourHandLength: 0.25
 MinuteHandLength: 0.36
 SecondHandLength: 0.36
