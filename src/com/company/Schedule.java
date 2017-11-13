@@ -7,6 +7,7 @@ import static com.company.Utils.parseTime;
 
 public class Schedule {
     private LinkedHashMap<String, Period> periods = new LinkedHashMap<>();
+    String name;
 
     public static final int EMPTY_SCHEDULE = 0;
     public static final int DEFAULT_SCHEDULE = 1;
@@ -20,6 +21,15 @@ public class Schedule {
     *leave blank for empty schedule
     */
     public Schedule(int schedule) {
+        setSchedule(schedule);
+    }
+
+    public Schedule(int schedule, String name) {
+        this.name = name;
+        setSchedule(schedule);
+    }
+
+    private void setSchedule(int schedule) {
         if (!(schedule <= 4 && schedule >= 0)) {
             schedule = EMPTY_SCHEDULE;
         }
@@ -73,7 +83,7 @@ public class Schedule {
         }
     }
 
-    public HashMap<String, Period> getPeriods() {
+    public LinkedHashMap<String, Period> getPeriods() {
         return periods;
     }
 

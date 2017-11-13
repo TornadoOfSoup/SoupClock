@@ -73,8 +73,8 @@ class Clock extends JFrame implements Runnable{
 
     static Random r = new Random();
     static String resourceFolder;
+    
 
-    static JLayeredPane layeredPane = new JLayeredPane();
     int[] resolution = new int[2];
     ImageIcon bgIcon, hourHandIcon, minuteHandIcon, secondHandIcon, numbersIcon;
 
@@ -105,7 +105,9 @@ class Clock extends JFrame implements Runnable{
     Schedule schedule;
 
     ArrayList<JLabel> periods = new ArrayList<>();
-
+    
+    static JLayeredPane layeredPane = new JLayeredPane();
+    static JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
     public Clock(int width, int height, HashMap<String, String> configHashMap) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
@@ -126,6 +128,8 @@ class Clock extends JFrame implements Runnable{
 
         initialFullscreen = true;
         doTickingSound = false;
+        
+        
 
         int scheduleNumber = Integer.parseInt(JOptionPane.showInputDialog("Please input a number representing which schedule you want to use.\n" +
                 "(0 for none, 1 for normal, 2 for H Period at beginning of day, 3 for H Period at end of day"));
