@@ -22,6 +22,7 @@ public class Schedule {
     */
     public Schedule(int schedule) {
         setSchedule(schedule);
+        setName("");
     }
 
     public Schedule(int schedule, String name) {
@@ -81,6 +82,14 @@ public class Schedule {
         } catch (NullPointerException e) {
             return false;
         }
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LinkedHashMap<String, Period> getPeriods() {

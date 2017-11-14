@@ -2,21 +2,21 @@ package com.company;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static com.company.Utils.parseTime;
 
 public class ScheduleParser {
-    Schedule schedule = new Schedule(0);
+    public Schedule schedule;
 
 
     public ScheduleParser(File file) {
         ArrayList<String> linesOfScheduleFile = readLinesOfFile(file);
-        schedule.setPeriods(buildScheduleHashMap(linesOfScheduleFile));
+        schedule = buildSchedule(linesOfScheduleFile);
     }
 
     public ScheduleParser() {
+        schedule = new Schedule(0);
         schedule.setPeriods(defaultSchedule());
     }
 
@@ -54,27 +54,31 @@ public class ScheduleParser {
         return lineList;
     }
 
-    public static LinkedHashMap<String, Period> buildScheduleHashMap(ArrayList<String> linesOfScheduleFile) {
+    public static Schedule buildSchedule(ArrayList<String> linesOfScheduleFile) {
         LinkedHashMap<String, Period> scheduleHashMap = defaultSchedule();
+        Schedule schedule = new Schedule(0);
 
         for (String line : linesOfScheduleFile) {
             String[] parts = new String[2];
-            String[] times = parts[1].split(" - ");
-            if ((!line.isEmpty() && !line.startsWith("//")) || !line.contains(":")) { //ignore empty lines and commented out lines and lines that don't have colons in them
+
+            if (!line.isEmpty() && !line.startsWith("//") && line.contains(":")) { //ignore empty lines and commented out lines and lines that don't have colons in them
                 parts[0] = line.substring(0, line.indexOf(":"));
-                parts[1] = line.substring(line.indexOf(":"), line.length());
-                System.out.println(parts[0] + " | " + parts[1]);
+                parts[1] = line.substring(line.indexOf(":") + 1, line.length());
+                String[] times = parts[1].trim().split(" - ");
+
+                //System.out.println(parts[0] + " | " + parts[1]);
                 scheduleHashMap.put(parts[0], new Period(parseTime(times[0]), parseTime(times[1])));
             } else {
                 if (line.startsWith("NAME - ")) {
-                    //todo put stuff to get name here
+                    schedule.setName(line.replace("NAME - ", ""));
                 }
             }
         }
-        return scheduleHashMap;
+        schedule.setPeriods(scheduleHashMap);
+        return schedule;
     }
 
-    public LinkedHashMap<String, Period> getScheduleHashMap() {
-        return schedule.getPeriods();
+    public Schedule getSchedule() {
+        return schedule;
     }
 }

@@ -1,6 +1,9 @@
 package com.company;
 
+import javax.swing.*;
+import java.awt.*;
 import java.sql.Time;
+import java.util.List;
 
 public class Utils {
 
@@ -115,5 +118,14 @@ public class Utils {
         return returnString;
     }
 
+    public static Dimension getLargestLabelSizeInList(List<JLabel> list) {
+        Dimension largestSize = new Dimension(0, 0);
+        for (JLabel label : list) {
+            if (label.getWidth() > largestSize.getWidth()) {
+                largestSize = label.getSize();
+            }
+        }
+        return largestSize;
+    }
 }
 

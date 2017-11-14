@@ -15,9 +15,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static com.company.Utils.multiplyString;
-import static com.company.Utils.parseTime;
-import static com.company.Utils.parseTimeWithMeridian;
+import static com.company.Main.currentDirectory;
+import static com.company.Utils.*;
 
 public class Main {
 
@@ -128,13 +127,26 @@ class Clock extends JFrame implements Runnable{
 
         initialFullscreen = true;
         doTickingSound = false;
-        
-        
 
         int scheduleNumber = Integer.parseInt(JOptionPane.showInputDialog("Please input a number representing which schedule you want to use.\n" +
-                "(0 for none, 1 for normal, 2 for H Period at beginning of day, 3 for H Period at end of day"));
+                "(0 for none, 1 for normal, 2 for H Period at beginning of day,\n" +
+                " 3 for H Period at end of day, 4 for a custom schedule"));
 
-        schedule = new Schedule(scheduleNumber);
+        if (scheduleNumber == 4) {
+            JOptionPane.showMessageDialog(null, "Please select the desired schedule file.", "Schedule", JOptionPane.INFORMATION_MESSAGE);
+            JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
+            int scheduleChooserVal = chooser.showOpenDialog(null);
+
+            if (scheduleChooserVal == JFileChooser.APPROVE_OPTION) {
+                ArrayList<String> lines = ScheduleParser.readLinesOfFile(chooser.getSelectedFile());
+                schedule = ScheduleParser.buildSchedule(lines);
+            } else {
+                JOptionPane.showMessageDialog(null, "Using default schedule.", "Default", JOptionPane.INFORMATION_MESSAGE);
+                schedule = new Schedule(1);
+            }
+        } else {
+            schedule = new Schedule(scheduleNumber);
+        }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
 
         initFrame();
@@ -335,6 +347,15 @@ class Clock extends JFrame implements Runnable{
             label.setAlignmentY(Component.CENTER_ALIGNMENT);
             periods.add(label);
         }
+        
+        JLabel nameLabel = new JLabel(schedule.getName()); //TODO make this center properly
+        nameLabel.setHorizontalAlignment(JLabel.CENTER);
+        nameLabel.setForeground(periodLabelColor);
+        nameLabel.setBackground(new Color(0, 0, 0, 0));
+        nameLabel.setFont(periodFont);
+        nameLabel.setOpaque(true);
+        nameLabel.setSize(getLargestLabelSizeInList(periods));
+        periods.add(0, nameLabel);
 
         schedulePanel.add(Box.createVerticalGlue());
 
@@ -485,7 +506,7 @@ class Clock extends JFrame implements Runnable{
                 Graphics2D g2d = (Graphics2D) g;
 
                     if (leftOrRight == 0) { //starting left
-                        g2d.drawImage(img, initX + (speed * deltaTime), initY + (int)(deltaY * deltaTime), null); //TODO figure out how to stop shared deltaTime from aligning all pictures
+                        g2d.drawImage(img, initX + (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
                     } else {
                         g2d.drawImage(img, initX - (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
                     }
@@ -803,28 +824,40 @@ class Clock extends JFrame implements Runnable{
                 }
 
                 if (doSchedule) {
+                    int i = 0; //variable to tell the first label not to get looked at by the thing
                     for (JLabel label : periods) {
-                        String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
-                                .split(" - "); //should get the times of the period
-                        //System.out.println(times[0] + "   |   " + times[1]);
-                        Time startTime = parseTimeWithMeridian(times[0].replace(" ", ""));
-                        Time endTime = parseTimeWithMeridian(times[1].replace(" ", ""));
+                        if (!schedule.getName().isEmpty() && i == 0) {
 
-                        label.setFont(periodFont);
+                            if (!periodFont.equals(label.getFont())) { //still have to do this
+                                label.setFont(periodFont);
+                            }
 
-                        Time currentTime;
-                        if (amOrPM == Calendar.PM) {
-                            currentTime = parseTime((hour + 12) + ":" + minute + ":" + second);
+                            i++; //now i doesn't equal 0 so it will process as normal
                         } else {
-                            currentTime = parseTime(hour + ":" + minute + ":" + second);
-                        }
-                        if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(endTime)) {
-                            int index = periods.indexOf(label);
-                            //System.out.println("time in period " + index);
-                            label.setBackground(periodHighlightColor);
-                            periods.set(index, label);
-                        } else {
-                            label.setBackground(new Color(0, 0, 0, 0));
+                            String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
+                                    .split(" - "); //should get the times of the period
+                            //System.out.println(times[0] + "   |   " + times[1]);
+                            Time startTime = parseTimeWithMeridian(times[0].replace(" ", ""));
+                            Time endTime = parseTimeWithMeridian(times[1].replace(" ", ""));
+
+                            if (!periodFont.equals(label.getFont())) {
+                                label.setFont(periodFont);
+                            }
+
+                            Time currentTime;
+                            if (amOrPM == Calendar.PM) {
+                                currentTime = parseTime((hour + 12) + ":" + minute + ":" + second);
+                            } else {
+                                currentTime = parseTime(hour + ":" + minute + ":" + second);
+                            }
+                            if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(endTime)) {
+                                int index = periods.indexOf(label);
+                                //System.out.println("time in period " + index);
+                                label.setBackground(periodHighlightColor);
+                                periods.set(index, label);
+                            } else {
+                                label.setBackground(new Color(0, 0, 0, 0));
+                            }
                         }
                     }
                 }
