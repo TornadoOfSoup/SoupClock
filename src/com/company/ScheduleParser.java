@@ -16,8 +16,7 @@ public class ScheduleParser {
     }
 
     public ScheduleParser() {
-        schedule = new Schedule(0);
-        schedule.setPeriods(defaultSchedule());
+        schedule = new Schedule(1);
     }
 
     public static LinkedHashMap<String, Period> defaultSchedule() {
@@ -55,7 +54,7 @@ public class ScheduleParser {
     }
 
     public static Schedule buildSchedule(ArrayList<String> linesOfScheduleFile) {
-        LinkedHashMap<String, Period> scheduleHashMap = defaultSchedule();
+        LinkedHashMap<String, Period> scheduleHashMap = new LinkedHashMap<>();
         Schedule schedule = new Schedule(0);
 
         for (String line : linesOfScheduleFile) {

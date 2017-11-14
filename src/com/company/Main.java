@@ -346,19 +346,21 @@ class Clock extends JFrame implements Runnable{
             label.setOpaque(true);
             label.setAlignmentY(Component.CENTER_ALIGNMENT);
             periods.add(label);
+            //System.out.println(label.getText());
         }
-        
-        JLabel nameLabel = new JLabel(schedule.getName()); //TODO make this center properly
-        nameLabel.setHorizontalAlignment(JLabel.CENTER);
-        nameLabel.setForeground(periodLabelColor);
-        nameLabel.setBackground(new Color(0, 0, 0, 0));
-        nameLabel.setFont(periodFont);
-        nameLabel.setOpaque(true);
-        nameLabel.setSize(getLargestLabelSizeInList(periods));
-        periods.add(0, nameLabel);
 
         schedulePanel.add(Box.createVerticalGlue());
 
+        if (!schedule.getName().equals("")) {
+            JLabel nameLabel = new JLabel(schedule.getName()); //TODO make this center properly
+            nameLabel.setHorizontalAlignment(JLabel.CENTER);
+            nameLabel.setForeground(periodLabelColor);
+            nameLabel.setBackground(new Color(0, 0, 0, 0));
+            nameLabel.setFont(periodFont);
+            nameLabel.setOpaque(true);
+            nameLabel.setSize(getLargestLabelSizeInList(periods));
+            periods.add(0, nameLabel);
+        }
         for (JLabel label : periods) {
             schedulePanel.add(label, BorderLayout.WEST);
         }
@@ -826,7 +828,7 @@ class Clock extends JFrame implements Runnable{
                 if (doSchedule) {
                     int i = 0; //variable to tell the first label not to get looked at by the thing
                     for (JLabel label : periods) {
-                        if (!schedule.getName().isEmpty() && i == 0) {
+                        if ((!schedule.getName().isEmpty() && i == 0)) {
 
                             if (!periodFont.equals(label.getFont())) { //still have to do this
                                 label.setFont(periodFont);

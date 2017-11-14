@@ -21,8 +21,8 @@ public class Schedule {
     *leave blank for empty schedule
     */
     public Schedule(int schedule) {
-        setSchedule(schedule);
         setName("");
+        setSchedule(schedule);
     }
 
     public Schedule(int schedule, String name) {
@@ -36,6 +36,7 @@ public class Schedule {
         }
 
         if (schedule == DEFAULT_SCHEDULE) {
+            name = "Normal Schedule";
             periods.put("A", new Period(parseTime("8:19"), parseTime("9:07")));
             periods.put("B", new Period(parseTime("9:11"), parseTime("9:59")));
             periods.put("C", new Period(parseTime("10:03"), parseTime("10:51")));
@@ -45,6 +46,7 @@ public class Schedule {
             periods.put("F", new Period(parseTime("13:01"), parseTime("13:53")));
             periods.put("G", new Period(parseTime("13:57"), parseTime("14:45")));
         } else if (schedule == H_PERIOD_ENDING_SCHEDULE) {
+            name = "H Period Schedule";
             periods.put("A", new Period(parseTime("8:15"), parseTime("8:57")));
             periods.put("B", new Period(parseTime("9:01"), parseTime("9:43")));
             periods.put("C", new Period(parseTime("9:47"), parseTime("10:29")));
@@ -55,6 +57,7 @@ public class Schedule {
             periods.put("G", new Period(parseTime("13:18"), parseTime("14:00")));
             periods.put("H", new Period(parseTime("14:03"), parseTime("14:45")));
         } else if (schedule == H_PERIOD_BEGINNING_SCHEDULE) {
+            name = "H Period Schedule";
             periods.put("H", new Period(parseTime("8:15"), parseTime("8:57")));
             periods.put("A", new Period(parseTime("9:01"), parseTime("9:43")));
             periods.put("B", new Period(parseTime("9:47"), parseTime("10:29")));
@@ -65,6 +68,7 @@ public class Schedule {
             periods.put("F", new Period(parseTime("13:18"), parseTime("14:00")));
             periods.put("G", new Period(parseTime("14:03"), parseTime("14:45")));
         } else if (schedule == TEST_SCHEDULE) {
+            name = "Test";
             periods.put("A", new Period(parseTime("00:00"), parseTime("01:00")));
             periods.put("B", new Period(parseTime("11:53"), parseTime("11:54")));
             periods.put("C", new Period(parseTime("11:54"), parseTime("11:55")));
