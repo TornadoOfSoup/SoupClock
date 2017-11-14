@@ -15,30 +15,45 @@ public class ConfigParser {
     }
 
     public ConfigParser() {
-        this.configHashMap = defaultConfiguration();
+        this.configHashMap = defaultConfiguration(true);
     }
 
-    public static HashMap<String, String> defaultConfiguration() {
+    public static HashMap<String, String> defaultConfiguration(boolean checkForLocalFile) {
         HashMap<String, String> configHashMap = new HashMap<>();
+        String currentDir = Main.currentDirectory().getPath();
+        File defaultFile = new File(currentDir.substring(0, currentDir.lastIndexOf(File.separator))
+                + "/resources/config/default.txt");
+        System.out.println("Searching " + defaultFile.getPath() + " for default.txt");
 
-        configHashMap.put("ResourcesFolder", "resources/default");
-        configHashMap.put("DigitalClock", "false");
-        configHashMap.put("DigitalClockColor", "#004469");
-        configHashMap.put("DigitalClockFont", "Courier New");
-        configHashMap.put("DigitalClockSize", "40");
-        configHashMap.put("Schedule", "true");
-        configHashMap.put("ScheduleColor", "#ffffff");
-        configHashMap.put("ScheduleFont", "Consolas");
-        configHashMap.put("ScheduleSize", "28");
-        configHashMap.put("PeriodHighlightColor", "#4dd7f9");
-        configHashMap.put("HourHandLength", "0.25");
-        configHashMap.put("MinuteHandLength", "0.36");
-        configHashMap.put("SecondHandLength", "0.36");
-        configHashMap.put("FlyingImages", "false");
-        configHashMap.put("BackgroundColor", "#46494e");
-        configHashMap.put("Framerate", "60");
-        configHashMap.put("RandomImages", "resources/default/a.jpg, 5, random, 12-15, 0.3-0.8 | resources/default/b.png, 8, random, 20-28, 0.6-1.0");
-        //configHashMap.put("", "");
+        if (defaultFile.exists() && checkForLocalFile) {
+            configHashMap = buildConfigHashMap(readLinesOfFile(defaultFile));
+            System.out.println("Found default file! Using it...");
+        } else {
+            if (checkForLocalFile) {
+                System.out.println("Couldn't find default file, using internal alternative...");
+            } else {
+                System.out.println("Was told not to look for internal file");
+            }
+
+            configHashMap.put("ResourcesFolder", "resources/default");
+            configHashMap.put("DigitalClock", "false");
+            configHashMap.put("DigitalClockColor", "#00ff00");
+            configHashMap.put("DigitalClockFont", "Courier New");
+            configHashMap.put("DigitalClockSize", "40");
+            configHashMap.put("Schedule", "true");
+            configHashMap.put("ScheduleColor", "#00ff00");
+            configHashMap.put("ScheduleFont", "Consolas");
+            configHashMap.put("ScheduleSize", "24");
+            configHashMap.put("PeriodHighlightColor", "#000000");
+            configHashMap.put("HourHandLength", "0.25");
+            configHashMap.put("MinuteHandLength", "0.36");
+            configHashMap.put("SecondHandLength", "0.36");
+            configHashMap.put("FlyingImages", "false");
+            configHashMap.put("BackgroundColor", "#46494e");
+            configHashMap.put("Framerate", "60");
+            configHashMap.put("RandomImages", "resources/default/a.jpg, 5, random, 12-15, 0.3-0.8 | resources/default/b.png, 8, random, 20-28, 0.6-1.0");
+            //configHashMap.put("", "");
+        }
 
         return configHashMap;
     }
@@ -63,7 +78,7 @@ public class ConfigParser {
     }
 
     public static HashMap<String, String> buildConfigHashMap(ArrayList<String> linesOfConfigFile) {
-        HashMap<String, String> configHashMap = defaultConfiguration();
+        HashMap<String, String> configHashMap = defaultConfiguration(false);
 
         for (String line : linesOfConfigFile) {
             String[] parts = line.split(":");

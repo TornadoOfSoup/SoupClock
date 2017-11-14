@@ -15,7 +15,7 @@ DigitalClockSize: 40
 Schedule: true
 ScheduleColor: #00ff00
 ScheduleFont: Consolas
-ScheduleSize: 28
+ScheduleSize: 24
 PeriodHighlightColor: #000000
 HourHandLength: 0.25
 MinuteHandLength: 0.36

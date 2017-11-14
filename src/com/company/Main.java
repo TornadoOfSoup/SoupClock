@@ -30,26 +30,34 @@ public class Main {
         int height = (int) screenSize.getHeight();
 
         System.out.println("Resolution according to toolkit: " + width + " x " + height);
+        HashMap<String, String> configHashMap = new HashMap<>();
 
-        JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
-
-        chooser.setCurrentDirectory(currentDirectory());
-
-        JOptionPane.showMessageDialog(null, "Please select the desired configuration file.", "Configuration", JOptionPane.INFORMATION_MESSAGE);
-        int chooserReturnVal = chooser.showOpenDialog(null);
-
-        HashMap<String, String> configHashMap;
-
-        if (chooserReturnVal == JFileChooser.APPROVE_OPTION) {
-            File configFile = chooser.getSelectedFile();
-            ArrayList<String> lines = ConfigParser.readLinesOfFile(configFile);
-            configHashMap = ConfigParser.buildConfigHashMap(lines);
-            for (String line : lines) {
-                System.out.println(line);
+        if (args.length > 0) {
+            if (args[0].equalsIgnoreCase("default")) {
+                configHashMap = ConfigParser.defaultConfiguration(true);
+                configHashMap.put("AutoStart", "true");
+            } else {
+                configHashMap = ConfigParser.defaultConfiguration(true);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Using default configuration.", "Default", JOptionPane.INFORMATION_MESSAGE);
-            configHashMap = ConfigParser.defaultConfiguration();
+            JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
+
+            chooser.setCurrentDirectory(currentDirectory());
+
+            JOptionPane.showMessageDialog(null, "Please select the desired configuration file.", "Configuration", JOptionPane.INFORMATION_MESSAGE);
+            int chooserReturnVal = chooser.showOpenDialog(null);
+
+            if (chooserReturnVal == JFileChooser.APPROVE_OPTION) {
+                File configFile = chooser.getSelectedFile();
+                ArrayList<String> lines = ConfigParser.readLinesOfFile(configFile);
+                configHashMap = ConfigParser.buildConfigHashMap(lines);
+                for (String line : lines) {
+                    System.out.println(line);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Using default configuration.", "Default", JOptionPane.INFORMATION_MESSAGE);
+                configHashMap = ConfigParser.defaultConfiguration(true);
+            }
         }
 
         c = new Clock(width, height, configHashMap);
@@ -128,24 +136,34 @@ class Clock extends JFrame implements Runnable{
         initialFullscreen = true;
         doTickingSound = false;
 
-        int scheduleNumber = Integer.parseInt(JOptionPane.showInputDialog("Please input a number representing which schedule you want to use.\n" +
-                "(0 for none, 1 for normal, 2 for H Period at beginning of day,\n" +
-                " 3 for H Period at end of day, 4 for a custom schedule"));
+        boolean autoStart = false;
 
-        if (scheduleNumber == 4) {
-            JOptionPane.showMessageDialog(null, "Please select the desired schedule file.", "Schedule", JOptionPane.INFORMATION_MESSAGE);
-            JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
-            int scheduleChooserVal = chooser.showOpenDialog(null);
-
-            if (scheduleChooserVal == JFileChooser.APPROVE_OPTION) {
-                ArrayList<String> lines = ScheduleParser.readLinesOfFile(chooser.getSelectedFile());
-                schedule = ScheduleParser.buildSchedule(lines);
-            } else {
-                JOptionPane.showMessageDialog(null, "Using default schedule.", "Default", JOptionPane.INFORMATION_MESSAGE);
+        if (configHashMap.containsKey("AutoStart")) {
+            autoStart = Boolean.parseBoolean(configHashMap.get("AutoStart"));
+            if (autoStart == true) {
                 schedule = new Schedule(1);
             }
-        } else {
-            schedule = new Schedule(scheduleNumber);
+        }
+        if (autoStart == false) {
+            int scheduleNumber = Integer.parseInt(JOptionPane.showInputDialog("Please input a number representing which schedule you want to use.\n" +
+                    "(0 for none, 1 for normal, 2 for H Period at beginning of day,\n" +
+                    " 3 for H Period at end of day, 4 for a custom schedule)"));
+
+            if (scheduleNumber == 4) {
+                JOptionPane.showMessageDialog(null, "Please select the desired schedule file.", "Schedule", JOptionPane.INFORMATION_MESSAGE);
+                JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
+                int scheduleChooserVal = chooser.showOpenDialog(null);
+
+                if (scheduleChooserVal == JFileChooser.APPROVE_OPTION) {
+                    ArrayList<String> lines = ScheduleParser.readLinesOfFile(chooser.getSelectedFile());
+                    schedule = ScheduleParser.buildSchedule(lines);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Using default schedule.", "Default", JOptionPane.INFORMATION_MESSAGE);
+                    schedule = new Schedule(1);
+                }
+            } else {
+                schedule = new Schedule(scheduleNumber);
+            }
         }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
 
