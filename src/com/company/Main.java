@@ -172,6 +172,7 @@ class Clock extends JFrame implements Runnable{
 
 
     public void initFrame() {
+        double clockSizeRatio = Double.parseDouble(configHashMap.get("ClockSize"));
         setTitle("Halloween Clock by TornadoOfSoup");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -198,8 +199,8 @@ class Clock extends JFrame implements Runnable{
         double minuteHandRatio = (double) minuteHandIcon.getImage().getHeight(null) / minuteHandIcon.getImage().getWidth(null);
         double secondHandRatio = (double) secondHandIcon.getImage().getHeight(null) / secondHandIcon.getImage().getWidth(null);
 
-        Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getWidth() * 0.5),
-                (int) Math.round(this.getWidth() * 0.5), Image.SCALE_DEFAULT);
+        Image background = bgIcon.getImage().getScaledInstance((int) Math.round(this.getHeight() * clockSizeRatio),
+                (int) Math.round(this.getHeight() * clockSizeRatio), Image.SCALE_DEFAULT);
 
         backgroundImage = new JLabel(new ImageIcon(background));
         backgroundImage.setBounds(0, 0, resolution[0], resolution[1]);
@@ -220,7 +221,7 @@ class Clock extends JFrame implements Runnable{
         hourHandImage = new JLabel(new ImageIcon(hourHand));
         hourHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //hourPanel.add(hourHandImage);
-        
+
         minuteHand = minuteHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * minuteHandLength / minuteHandRatio),
                 (int) Math.round(backgroundImage.getWidth() * minuteHandLength), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
@@ -735,7 +736,7 @@ class Clock extends JFrame implements Runnable{
         amOrPM = calendar.get(Calendar.AM_PM);
 
         year = calendar.get(Calendar.YEAR);
-        month = calendar.get(Calendar.MONTH);
+        month = calendar.get(Calendar.MONTH) + 1;
         day = calendar.get(Calendar.DAY_OF_MONTH);
 
         //System.out.println(hour + ":" + minute + ":" + second);

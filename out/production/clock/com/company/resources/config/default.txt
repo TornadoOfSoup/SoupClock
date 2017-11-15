@@ -1,5 +1,6 @@
 // all colors are hex color codes, they must be prefixed with a "#"
 // for digital clock and schedule, monospaced fonts are recommended
+// clock size is the ratio of the size of the clock to the height of the screen, for example, "0.9" is 90% of screen height
 
 // lines can be commented out with "//" which allows you to try new
 //   configurations without deleting old ones
@@ -8,6 +9,7 @@
 // remove or comment out lines you want to be set to defaults
 
 ResourcesFolder: resources/default
+ClockSize: 0.9
 DigitalClock: false
 DigitalClockColor: #00ff00
 DigitalClockFont: Courier New
