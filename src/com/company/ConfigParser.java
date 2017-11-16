@@ -40,7 +40,7 @@ public class ConfigParser {
             configHashMap.put("DigitalClock", "false");
             configHashMap.put("DigitalClockColor", "#00ff00");
             configHashMap.put("DigitalClockFont", "Courier New");
-            configHashMap.put("DigitalClockSize", "40");
+            configHashMap.put("DigitalClockSize", "48");
             configHashMap.put("Schedule", "true");
             configHashMap.put("ScheduleColor", "#00ff00");
             configHashMap.put("ScheduleFont", "Consolas");

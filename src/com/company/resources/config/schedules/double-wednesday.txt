@@ -1,4 +1,4 @@
-NAME - Doubles (A B DD E F G)
+NAME - Doubles (A B C DD F G)
 
 A: 8:19 - 9:07
 B: 9:11 - 9:59

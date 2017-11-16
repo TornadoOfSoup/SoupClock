@@ -13,7 +13,7 @@ ClockSize: 0.9
 DigitalClock: false
 DigitalClockColor: #00ff00
 DigitalClockFont: Courier New
-DigitalClockSize: 40
+DigitalClockSize: 48
 Schedule: true
 ScheduleColor: #00ff00
 ScheduleFont: Consolas
