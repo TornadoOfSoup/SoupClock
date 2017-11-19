@@ -6,6 +6,8 @@
 //   configurations without deleting old ones
 // you can also use them to leave yourself notes
 
+// for ScheduleLocation: either TOP, BOTTOM, or CENTER
+
 // remove or comment out lines you want to be set to defaults
 
 ResourcesFolder: resources/default
@@ -18,6 +20,7 @@ Schedule: true
 ScheduleColor: #00ff00
 ScheduleFont: Consolas
 ScheduleSize: 24
+ScheduleLocation: BOTTOM
 PeriodHighlightColor: #000000
 HourHandLength: 0.25
 MinuteHandLength: 0.36

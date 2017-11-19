@@ -368,10 +368,14 @@ class Clock extends JFrame implements Runnable{
             //System.out.println(label.getText());
         }
 
-        schedulePanel.add(Box.createVerticalGlue());
+        String scheduleLocation = configHashMap.get("ScheduleLocation");
+
+        if (scheduleLocation.equals("CENTER") || scheduleLocation.equals("BOTTOM")) {
+            schedulePanel.add(Box.createVerticalGlue());
+        }
 
         if (!schedule.getName().equals("")) {
-            JLabel nameLabel = new JLabel(schedule.getName()); //TODO make this center properly
+            JLabel nameLabel = new JLabel(schedule.getName());
             nameLabel.setHorizontalAlignment(JLabel.CENTER);
             nameLabel.setForeground(periodLabelColor);
             nameLabel.setBackground(new Color(0, 0, 0, 0));
@@ -384,7 +388,9 @@ class Clock extends JFrame implements Runnable{
             schedulePanel.add(label, BorderLayout.WEST);
         }
 
-        schedulePanel.add(Box.createVerticalGlue());
+        if (scheduleLocation.equals("CENTER") || scheduleLocation.equals("TOP")) {
+            schedulePanel.add(Box.createVerticalGlue());
+        }
         guiPanel.add(schedulePanel);
     }
 

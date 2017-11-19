@@ -45,6 +45,7 @@ public class ConfigParser {
             configHashMap.put("ScheduleColor", "#00ff00");
             configHashMap.put("ScheduleFont", "Consolas");
             configHashMap.put("ScheduleSize", "24");
+            configHashMap.put("ScheduleLocation", "BOTTOM");
             configHashMap.put("PeriodHighlightColor", "#000000");
             configHashMap.put("HourHandLength", "0.25");
             configHashMap.put("MinuteHandLength", "0.36");
