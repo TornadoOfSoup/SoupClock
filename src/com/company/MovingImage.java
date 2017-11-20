@@ -13,6 +13,7 @@ public class MovingImage extends JPanel implements Runnable{
     int[] resolution;
     int deltaTime;
     int deathBehavior;
+    boolean completed = false;
 
     Random r = new Random();
     int initY, finalY, initX, leftOrRight, speed, currentX, currentY;
@@ -145,6 +146,7 @@ public class MovingImage extends JPanel implements Runnable{
         while(true) {
             deltaTime++;
             if (checkDeathCondition()) {
+                completed = true;
                 invalidate();
                 setVisible(false);
                 setEnabled(false);

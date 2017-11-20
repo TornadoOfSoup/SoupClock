@@ -808,6 +808,17 @@ class Clock extends JFrame implements Runnable{
         return bimage;
     }
 
+    public void removeCompletedImages() {
+        for (Component c: getContentPane().getComponents()) {
+            if (c instanceof MovingImage) {
+                if (((MovingImage) c).completed) {
+                    getContentPane().remove(c);
+                    //System.out.println("Removed " + c.getName());
+                }
+            }
+        }
+    }
+
 
     @Override
     public void run() {
@@ -1019,6 +1030,7 @@ class Clock extends JFrame implements Runnable{
                 }
 
 */
+                removeCompletedImages();
                 currentSecond = second;
                 deltaTime++;
                 repaint();
