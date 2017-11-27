@@ -4,8 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Time;
 import java.util.List;
+import java.util.Random;
 
 public class Utils {
+
+    static Random r = new Random();
 
     public static Time parseTime(String time) {
         String[] parts = time.split(":");
@@ -126,6 +129,22 @@ public class Utils {
             }
         }
         return largestSize;
+    }
+
+    public static float randomNumberBetweenTwoFloats (float f1, float f2) {
+        f1 *= 10000;
+        f2 *= 10000;
+
+        int one = (int) f1;
+        int two = (int) f2;
+
+        int randInt = r.nextInt(two - one) + one;
+        return (float) randInt / 10000;
+    }
+
+    public static int randomNumberWithinBounds(int min, int max) {
+        int difference = max - min;
+        return r.nextInt(difference) + min;
     }
 }
 

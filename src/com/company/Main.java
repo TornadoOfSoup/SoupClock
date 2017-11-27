@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.Key;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -653,16 +652,6 @@ class Clock extends JFrame implements Runnable{
         }
     }
 
-    public float randomNumberBetweenTwoFloats (float f1, float f2) {
-        f1 *= 10000;
-        f2 *= 10000;
-
-        int one = (int) f1;
-        int two = (int) f2;
-
-        int randInt = r.nextInt(two - one) + one;
-        return (float) randInt / 10000;
-    }
 
     public void initClockHands_NONWORKING() {
         /*updateTimeVars();
@@ -833,6 +822,7 @@ class Clock extends JFrame implements Runnable{
         for (int i = 0; i < images.length; i++) {
             images[i] = images[i].trim();
         }
+
 
         while (true) {
             //run

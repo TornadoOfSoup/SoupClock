@@ -16,9 +16,9 @@ public class MovingImage extends JPanel implements Runnable{
     boolean completed = false;
 
     Random r = new Random();
-    int initY, finalY, initX, leftOrRight, speed, currentX, currentY;
+    int initY, finalY, initX, leftOrRight, currentX, currentY, mode;
     float alpha;
-    double deltaY;
+    double deltaX, deltaY;
 
     public static final int NEVER_DIE = 0;
     public static final int DIE_WHEN_OFF_SCREEN = 1;
@@ -28,11 +28,26 @@ public class MovingImage extends JPanel implements Runnable{
     public static final int LEFT_TO_RIGHT = 1;
     public static final int RIGHT_TO_LEFT = 2;
 
-    public MovingImage(BufferedImage img, int[] resolution, int speed, Color tint, float alpha, int deathBehavior, int direction) {
+    public static final int RANDOM_FLYBY = 0;
+    public static final int CONTROLLED_IMAGE = 1;
+
+    /**
+     * This one's for the random flyby images.
+     * Use the method signature that takes deltaY for more precise controls.
+     * @param img
+     * @param resolution
+     * @param deltaX
+     * @param tint
+     * @param alpha
+     * @param deathBehavior
+     * @param direction
+     */
+    public MovingImage(BufferedImage img, int[] resolution, double deltaX, Color tint, float alpha, int deathBehavior, int direction) {
         this.resolution = resolution;
-        this.speed = speed;
+        this.deltaX = deltaX;
         this.alpha = alpha;
         this.deathBehavior = deathBehavior;
+        this.mode = RANDOM_FLYBY;
         deltaTime = 0;
 
         if (tint != null) {
@@ -45,7 +60,29 @@ public class MovingImage extends JPanel implements Runnable{
         setBackground(new Color(0, 0, 0, 0));
         setOpaque(false);
 
-        makeRandomFlyBy(speed, direction);
+        makeRandomFlyBy(deltaX, direction);
+        start();
+    }
+
+    public MovingImage(BufferedImage img, int[] resolution, double deltaX, double deltaY, Color tint, float alpha, int deathBehavior, int direction) {
+        this.resolution = resolution;
+        this.deltaX = deltaX;
+        this.alpha = alpha;
+        this.deathBehavior = deathBehavior;
+        this.mode = CONTROLLED_IMAGE;
+        deltaTime = 0;
+
+        if (tint != null) {
+            this.img = tintImage(img, tint, false);
+        } else {
+            this.img = img;
+        }
+
+        setSize(resolution[0], resolution[1]);
+        setBackground(new Color(0, 0, 0, 0));
+        setOpaque(false);
+
+        makeRandomFlyBy(deltaX, direction);
         start();
     }
 
@@ -69,7 +106,8 @@ public class MovingImage extends JPanel implements Runnable{
         }
     }
 
-    public void makeRandomFlyBy (int speed, int direction) {
+
+    public void makeRandomFlyBy (double deltaX, int direction) {
         if (direction == LEFT_TO_RIGHT) {
             leftOrRight = 0;
         } else if (direction == RIGHT_TO_LEFT) {
@@ -86,9 +124,18 @@ public class MovingImage extends JPanel implements Runnable{
             initX = resolution[0] + 200;
         }
         finalY = r.nextInt(resolution[1]);
-        deltaY = -((double) (initY - finalY) / (resolution[0] / speed));
+        deltaY = -((double) (initY - finalY) / (resolution[0] / deltaX));
 
         System.out.println("initY: " + initY + " | finalY: " + finalY + " | deltaY: " + deltaY);
+    }
+
+    /**
+     * This one doesn't take a direction modifier, set deltaX to a negative value to make it move to the left
+     * @param deltaX
+     * @param deltaY
+     */
+    public void controlledMovingImage(double deltaX, double deltaY) {
+
     }
 
     public BufferedImage tintImage(BufferedImage img, Color color, boolean tintTransparent) {
@@ -131,14 +178,18 @@ public class MovingImage extends JPanel implements Runnable{
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
-        if (leftOrRight == 0) { //starting left
-            g2d.drawImage(img, initX + (speed * deltaTime), initY + (int)(deltaY * deltaTime), null); //TODO maybe replace this with one that cumulatively adds to current x and y
-            currentX = initX + (speed * deltaTime);
-        } else {
-            g2d.drawImage(img, initX - (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
-            currentX = initX - (speed * deltaTime);
+        if (mode == RANDOM_FLYBY) {
+            if (leftOrRight == 0) { //starting left
+                g2d.drawImage(img, initX + ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null); //TODO maybe replace this with one that cumulatively adds to current x and y
+                currentX = initX + ((int) deltaX * deltaTime);
+            } else {
+                g2d.drawImage(img, initX - ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null);
+                currentX = initX - ((int) deltaX * deltaTime);
+            }
+            currentY = initY + (int) (deltaY * deltaTime);
+        } else if (mode == CONTROLLED_IMAGE) {
+            //TODO put controlled image logic here, remember negative deltaX value for moving left
         }
-        currentY = initY + (int)(deltaY * deltaTime);
     }
 
     @Override
