@@ -64,7 +64,19 @@ public class MovingImage extends JPanel implements Runnable{
         start();
     }
 
-    public MovingImage(BufferedImage img, int[] resolution, double deltaX, double deltaY, Color tint, float alpha, int deathBehavior, int direction) {
+    /**
+     * Use this for control.
+     * @param img
+     * @param resolution
+     * @param deltaX
+     * @param deltaY
+     * @param initX
+     * @param initY
+     * @param tint
+     * @param alpha
+     * @param deathBehavior
+     */
+    public MovingImage(BufferedImage img, int[] resolution, double deltaX, double deltaY, int initX, int initY, Color tint, float alpha, int deathBehavior) {
         this.resolution = resolution;
         this.deltaX = deltaX;
         this.alpha = alpha;
@@ -82,7 +94,7 @@ public class MovingImage extends JPanel implements Runnable{
         setBackground(new Color(0, 0, 0, 0));
         setOpaque(false);
 
-        makeRandomFlyBy(deltaX, direction);
+        makeControlledMovingImage(initX, initY, deltaX, deltaY);
         start();
     }
 
@@ -131,11 +143,16 @@ public class MovingImage extends JPanel implements Runnable{
 
     /**
      * This one doesn't take a direction modifier, set deltaX to a negative value to make it move to the left
+     * @param initX
+     * @param initY
      * @param deltaX
      * @param deltaY
      */
-    public void controlledMovingImage(double deltaX, double deltaY) {
-
+    public void makeControlledMovingImage(int initX, int initY, double deltaX, double deltaY) {
+        this.initX = initX; //TODO this could all be redundant and unnecessary, so maybe change
+        this.initY = initY;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
     }
 
     public BufferedImage tintImage(BufferedImage img, Color color, boolean tintTransparent) {
@@ -189,6 +206,8 @@ public class MovingImage extends JPanel implements Runnable{
             currentY = initY + (int) (deltaY * deltaTime);
         } else if (mode == CONTROLLED_IMAGE) {
             //TODO put controlled image logic here, remember negative deltaX value for moving left
+            g2d.drawImage(img, initX + ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null);
+            currentX = initX + ((int) deltaX * deltaTime);
         }
     }
 

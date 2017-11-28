@@ -307,6 +307,13 @@ class Clock extends JFrame implements Runnable{
                     scheduleSize--;
                 } else if (e.getKeyChar() == '\\') {
                     scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
+                } else if (e.getKeyChar() == ' ') {
+                    try {
+                        BufferedImage testControlledImage = ImageIO.read(this.getClass().getResource(resourceFolder + "/doge.png"));
+                        conjureControlledImage(testControlledImage, 200, -50, randomNumberBetweenTwoFloats(-5, 5), 10, 0.9f);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
 
@@ -650,6 +657,10 @@ class Clock extends JFrame implements Runnable{
                 System.out.println(s);
             }
         }
+    }
+
+    public void conjureControlledImage(BufferedImage image, int initX, int initY, double deltaX, double deltaY, float alpha) {
+        add(new MovingImage(image, resolution, deltaX, deltaY, initX, initY, null, alpha, MovingImage.DIE_WHEN_OFF_SCREEN));
     }
 
 
