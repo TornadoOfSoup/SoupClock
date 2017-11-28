@@ -115,6 +115,8 @@ class Clock extends JFrame implements Runnable{
     static JLayeredPane layeredPane = new JLayeredPane();
     static JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
+    BufferedImage snowflake1, snowflake2;
+
     public Clock(int width, int height, HashMap<String, String> configHashMap) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
         resolution[0] = width;
@@ -165,6 +167,13 @@ class Clock extends JFrame implements Runnable{
             }
         }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
+
+        try {
+            snowflake1 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake1.png"));
+            snowflake2 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake2.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         initFrame();
     }
@@ -307,13 +316,10 @@ class Clock extends JFrame implements Runnable{
                     scheduleSize--;
                 } else if (e.getKeyChar() == '\\') {
                     scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
-                } else if (e.getKeyChar() == ' ') {
-                    try {
-                        BufferedImage testControlledImage = ImageIO.read(this.getClass().getResource(resourceFolder + "/doge.png"));
-                        conjureControlledImage(testControlledImage, 200, -50, randomNumberBetweenTwoFloats(-5, 5), 10, 0.9f);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                } else if (e.getKeyChar() == '-') {
+                    conjureControlledImage(snowflake1, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
+                } else if (e.getKeyChar() == '=') {
+                    conjureControlledImage(snowflake2, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
                 }
             }
 

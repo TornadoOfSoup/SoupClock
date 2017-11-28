@@ -197,17 +197,17 @@ public class MovingImage extends JPanel implements Runnable{
 
         if (mode == RANDOM_FLYBY) {
             if (leftOrRight == 0) { //starting left
-                g2d.drawImage(img, initX + ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null); //TODO maybe replace this with one that cumulatively adds to current x and y
-                currentX = initX + ((int) deltaX * deltaTime);
+                g2d.drawImage(img, initX + (int)(deltaX * deltaTime), initY + (int)(deltaY * deltaTime), null); //TODO maybe replace this with one that cumulatively adds to current x and y
+                currentX = initX + (int)(deltaX * deltaTime);
             } else {
-                g2d.drawImage(img, initX - ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null);
+                g2d.drawImage(img, initX - (int)(deltaX * deltaTime), initY + (int)(deltaY * deltaTime), null);
                 currentX = initX - ((int) deltaX * deltaTime);
             }
             currentY = initY + (int) (deltaY * deltaTime);
         } else if (mode == CONTROLLED_IMAGE) {
             //TODO put controlled image logic here, remember negative deltaX value for moving left
-            g2d.drawImage(img, initX + ((int) deltaX * deltaTime), initY + (int) (deltaY * deltaTime), null);
-            currentX = initX + ((int) deltaX * deltaTime);
+            g2d.drawImage(img, initX + (int)(deltaX * deltaTime), initY + (int)(deltaY * deltaTime), null);
+            currentX = initX + (int)(deltaX * deltaTime);
         }
     }
 
