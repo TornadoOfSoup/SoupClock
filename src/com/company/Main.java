@@ -101,8 +101,7 @@ class Clock extends JFrame implements Runnable{
 
     int scheduleSize;
 
-    boolean initialFullscreen;
-    boolean doTickingSound;
+    boolean initialFullscreen, doTickingSound, doSnow;
 
     RenderingHints antiAliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -114,8 +113,6 @@ class Clock extends JFrame implements Runnable{
     
     static JLayeredPane layeredPane = new JLayeredPane();
     static JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-    BufferedImage snowflake1, snowflake2;
 
     public Clock(int width, int height, HashMap<String, String> configHashMap) {
         System.out.println(new Timestamp(System.currentTimeMillis()) + " Creating " + this.getClass().getName() + " thread and Clock object");
@@ -136,6 +133,7 @@ class Clock extends JFrame implements Runnable{
 
         initialFullscreen = true;
         doTickingSound = false;
+        doSnow = true; //TODO replace this with a config check
 
         boolean autoStart = false;
 
@@ -167,13 +165,6 @@ class Clock extends JFrame implements Runnable{
             }
         }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
-
-        try {
-            snowflake1 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake1.png"));
-            snowflake2 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         initFrame();
     }
@@ -317,9 +308,9 @@ class Clock extends JFrame implements Runnable{
                 } else if (e.getKeyChar() == '\\') {
                     scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
                 } else if (e.getKeyChar() == '-') {
-                    conjureControlledImage(snowflake1, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
+                    //conjureControlledImage(snowflake1, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
                 } else if (e.getKeyChar() == '=') {
-                    conjureControlledImage(snowflake2, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
+                    //conjureControlledImage(snowflake2, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
                 }
             }
 
@@ -836,10 +827,20 @@ class Clock extends JFrame implements Runnable{
         Color periodHighlightColor = Color.decode(configHashMap.get("PeriodHighlightColor"));
         periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
 
+        BufferedImage snowflake1 = null, snowflake2 = null;
+        try {
+            snowflake1 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake1.png"));
+            snowflake2 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake2.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0; i < images.length; i++) {
             images[i] = images[i].trim();
         }
 
+        int snowMinX = (int) (0 - (resolution[0] * 0.5));
+        int snowMaxX = (int) (resolution[0] * 1.5);
 
         while (true) {
             //run
@@ -907,6 +908,12 @@ class Clock extends JFrame implements Runnable{
                     }
                 }
 
+                if (doSnow) {
+                    for (int i = 0; i <= 5; i++) {
+                        int x = randomNumberWithinBounds(snowMinX, snowMaxX);
+                        conjureControlledImage(snowflake1, x, -snowflake1.getHeight(), 10, randomNumberBetweenTwoFloats(10f, 15f), 0.95f);
+                    }
+                }
 
                 /*
                 if (hour == 8 && minute == 15 && amOrPM == calendar.AM) {
