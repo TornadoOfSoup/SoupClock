@@ -29,14 +29,14 @@ SecondHandLength: 0.36
 // DO NOT set SnowPerFrame to a negative number
 // SnowDeltaX can be made negative to change direction
 // SnowDeltaYMin MUST be less than (or equal to) SnowDeltaYMax
-DoSnow: false
+DoSnow: true
 SnowPerFrame: 2
 SnowDeltaX: -6
 SnowDeltaYMin: 6
 SnowDeltaYMax: 11
 
 FlyingImages: false
-BackgroundColor: #46494e
+BackgroundColor: #2e6b41
 Framerate: 60
 
 // format for RandomImages is: [path], [average number of seconds between each image], [side the image starts on], [range of speed], [range of opacity]

@@ -50,6 +50,11 @@ public class ConfigParser {
             configHashMap.put("HourHandLength", "0.25");
             configHashMap.put("MinuteHandLength", "0.36");
             configHashMap.put("SecondHandLength", "0.36");
+            configHashMap.put("DoSnow", "false");
+            configHashMap.put("SnowPerFrame", "2");
+            configHashMap.put("SnowDeltaX", "-6");
+            configHashMap.put("SnowDeltaYMin", "6");
+            configHashMap.put("SnowDeltaYMax", "11");
             configHashMap.put("FlyingImages", "false");
             configHashMap.put("BackgroundColor", "#46494e");
             configHashMap.put("Framerate", "60");

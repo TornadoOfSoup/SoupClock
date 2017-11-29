@@ -78,8 +78,7 @@ class Clock extends JFrame implements Runnable{
     private Thread thread;
 
     static Random r = new Random();
-    static String resourceFolder;
-    
+    static String resourceFolder, generalResourceFolder;
 
     int[] resolution = new int[2];
     ImageIcon bgIcon, hourHandIcon, minuteHandIcon, secondHandIcon, numbersIcon;
@@ -121,6 +120,7 @@ class Clock extends JFrame implements Runnable{
         this.configHashMap = configHashMap;
 
         resourceFolder = configHashMap.get("ResourcesFolder");
+        generalResourceFolder = resourceFolder.substring(0, resourceFolder.lastIndexOf("/")); //TODO test to see if this actually goes to the resources folder
         digitalClockFont = configHashMap.get("DigitalClockFont");
 
         System.out.println(resourceFolder);
@@ -133,7 +133,7 @@ class Clock extends JFrame implements Runnable{
 
         initialFullscreen = true;
         doTickingSound = false;
-        doSnow = true; //TODO replace this with a config check
+        doSnow = Boolean.parseBoolean(configHashMap.get("DoSnow"));
 
         boolean autoStart = false;
 
@@ -656,8 +656,23 @@ class Clock extends JFrame implements Runnable{
         }
     }
 
-    public void conjureControlledImage(BufferedImage image, int initX, int initY, double deltaX, double deltaY, float alpha) {
-        add(new MovingImage(image, resolution, deltaX, deltaY, initX, initY, null, alpha, MovingImage.DIE_WHEN_OFF_SCREEN));
+    /**
+     * Used for conjuring images with more control.
+     * Set topmostLayer to true to render on top of clock, false to render it behind the clock.
+     * @param image
+     * @param initX
+     * @param initY
+     * @param deltaX
+     * @param deltaY
+     * @param alpha
+     * @param topmostLayer
+     */
+    public void conjureControlledImage(BufferedImage image, int initX, int initY, double deltaX, double deltaY, float alpha, boolean topmostLayer) {
+        if (topmostLayer) {
+            add(new MovingImage(image, resolution, deltaX, deltaY, initX, initY, null, alpha, MovingImage.DIE_WHEN_OFF_SCREEN), BorderLayout.CENTER, new Integer(0));
+        } else {
+            add(new MovingImage(image, resolution, deltaX, deltaY, initX, initY, null, alpha, MovingImage.DIE_WHEN_OFF_SCREEN));
+        }
     }
 
 
@@ -827,10 +842,11 @@ class Clock extends JFrame implements Runnable{
         Color periodHighlightColor = Color.decode(configHashMap.get("PeriodHighlightColor"));
         periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
 
-        BufferedImage snowflake1 = null, snowflake2 = null;
+        BufferedImage snowflake1 = null, snowflake2 = null, doge = null;
         try {
             snowflake1 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake1.png"));
             snowflake2 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake2.png"));
+            doge = ImageIO.read(this.getClass().getResource(resourceFolder + "/doge.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -841,6 +857,10 @@ class Clock extends JFrame implements Runnable{
 
         int snowMinX = (int) (0 - (resolution[0] * 0.5));
         int snowMaxX = (int) (resolution[0] * 1.5);
+        int snowDeltaX = Integer.parseInt(configHashMap.get("SnowDeltaX"));
+        float snowDeltaYMin = Integer.parseInt(configHashMap.get("SnowDeltaYMin"));
+        float snowDeltaYMax = Integer.parseInt(configHashMap.get("SnowDeltaYMax"));
+        int snowPerFrame = Integer.parseInt(configHashMap.get("SnowPerFrame"));
 
         while (true) {
             //run
@@ -856,7 +876,6 @@ class Clock extends JFrame implements Runnable{
                         SoundEffects.TICK.play();
                     }
                 }
-
 
                 if (doFlyingImages) {
                     for (String image : images) {
@@ -909,9 +928,19 @@ class Clock extends JFrame implements Runnable{
                 }
 
                 if (doSnow) {
-                    for (int i = 0; i <= 5; i++) {
+                    //TODO possibly add a variable wind (which would be deltaX) that changes over time
+                    //TODO move snow from the individual resources folder to a seperate folder in the general resources folder
+                    for (int i = 0; i <= snowPerFrame; i++) {
                         int x = randomNumberWithinBounds(snowMinX, snowMaxX);
-                        conjureControlledImage(snowflake1, x, -snowflake1.getHeight(), 10, randomNumberBetweenTwoFloats(10f, 15f), 0.95f);
+                        if (r.nextInt(1000) == 0) {
+                            conjureControlledImage(doge, x, -doge.getHeight(), snowDeltaX, randomNumberBetweenTwoFloats(snowDeltaYMin, snowDeltaYMax), 0.95f, true); //1 in 1000 chance to be a doge instead
+                        } else {
+                            if (r.nextInt(3) == 0) { // 1/3 of snowflakes are topmost layer
+                                conjureControlledImage(snowflake1, x, -snowflake1.getHeight(), snowDeltaX, randomNumberBetweenTwoFloats(snowDeltaYMin, snowDeltaYMax), 0.95f, true);
+                            } else {
+                                conjureControlledImage(snowflake1, x, -snowflake1.getHeight(), snowDeltaX, randomNumberBetweenTwoFloats(snowDeltaYMin, snowDeltaYMax), 0.95f, false);
+                            }
+                        }
                     }
                 }
 
