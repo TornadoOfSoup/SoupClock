@@ -10,7 +10,7 @@
 
 // remove or comment out lines you want to be set to defaults
 
-ResourcesFolder: resources/default
+ResourcesFolder: resources/winter
 ClockSize: 0.9
 DigitalClock: false
 DigitalClockColor: #00ff00
@@ -22,14 +22,16 @@ ScheduleFont: Consolas
 ScheduleSize: 24
 ScheduleLocation: BOTTOM
 PeriodHighlightColor: #000000
-HourHandLength: 0.25
-MinuteHandLength: 0.36
-SecondHandLength: 0.36
+HourHandLength: 0.32
+MinuteHandLength: 0.45
+SecondHandLength: 0.45
 
 // DO NOT set SnowPerFrame to a negative number
 // SnowDeltaX can be made negative to change direction
 // SnowDeltaYMin MUST be less than (or equal to) SnowDeltaYMax
+// SnowSizeFactor is a number that the dimensions of the snow image are multiplied by
 DoSnow: true
+SnowSizeFactor: 1.0
 SnowPerFrame: 2
 SnowDeltaX: -6
 SnowDeltaYMin: 6

@@ -52,6 +52,7 @@ public class ConfigParser {
             configHashMap.put("SecondHandLength", "0.36");
             configHashMap.put("DoSnow", "false");
             configHashMap.put("SnowPerFrame", "2");
+            configHashMap.put("SnowSizeFactor", "1.0");
             configHashMap.put("SnowDeltaX", "-6");
             configHashMap.put("SnowDeltaYMin", "6");
             configHashMap.put("SnowDeltaYMax", "11");

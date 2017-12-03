@@ -120,10 +120,11 @@ class Clock extends JFrame implements Runnable{
         this.configHashMap = configHashMap;
 
         resourceFolder = configHashMap.get("ResourcesFolder");
-        generalResourceFolder = resourceFolder.substring(0, resourceFolder.lastIndexOf("/")); //TODO test to see if this actually goes to the resources folder
+        generalResourceFolder = resourceFolder.substring(0, resourceFolder.lastIndexOf("/")) + "/general"; //TODO test to see if this actually goes to the resources folder
         digitalClockFont = configHashMap.get("DigitalClockFont");
 
         System.out.println(resourceFolder);
+        System.out.println(generalResourceFolder);
 
         bgIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/background.png"));
         hourHandIcon = new ImageIcon(this.getClass().getResource(resourceFolder + "/hour-hand.png"));
@@ -842,11 +843,17 @@ class Clock extends JFrame implements Runnable{
         Color periodHighlightColor = Color.decode(configHashMap.get("PeriodHighlightColor"));
         periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
 
-        BufferedImage snowflake1 = null, snowflake2 = null, doge = null;
+        BufferedImage snowflake1 = null, doge = null;
+        float snowSizeFactor = Float.parseFloat(configHashMap.get("SnowSizeFactor"));
         try {
-            snowflake1 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake1.png"));
-            snowflake2 = ImageIO.read(this.getClass().getResource(resourceFolder + "/snowflake2.png"));
-            doge = ImageIO.read(this.getClass().getResource(resourceFolder + "/doge.png"));
+            snowflake1 = ImageIO.read(this.getClass().getResource(generalResourceFolder + "/snowflake1.png"));
+            doge = ImageIO.read(this.getClass().getResource(generalResourceFolder + "/doge.png"));
+
+            snowflake1 = toBufferedImage(snowflake1.getScaledInstance((int)(snowflake1.getWidth() * snowSizeFactor),
+                    (int)(snowflake1.getHeight() * snowSizeFactor), Image.SCALE_DEFAULT));
+
+            doge = toBufferedImage(doge.getScaledInstance((int)(doge.getWidth() * snowSizeFactor),
+                    (int)(doge.getHeight() * snowSizeFactor), Image.SCALE_DEFAULT));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -929,7 +936,6 @@ class Clock extends JFrame implements Runnable{
 
                 if (doSnow) {
                     //TODO possibly add a variable wind (which would be deltaX) that changes over time
-                    //TODO move snow from the individual resources folder to a seperate folder in the general resources folder
                     for (int i = 0; i <= snowPerFrame; i++) {
                         int x = randomNumberWithinBounds(snowMinX, snowMaxX);
                         if (r.nextInt(1000) == 0) {
