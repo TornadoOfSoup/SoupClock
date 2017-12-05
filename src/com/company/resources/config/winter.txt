@@ -23,8 +23,8 @@ ScheduleSize: 24
 ScheduleLocation: BOTTOM
 PeriodHighlightColor: #000000
 HourHandLength: 0.32
-MinuteHandLength: 0.45
-SecondHandLength: 0.45
+MinuteHandLength: 0.40
+SecondHandLength: 0.42
 
 // DO NOT set SnowPerFrame to a negative number
 // SnowDeltaX can be made negative to change direction
@@ -32,13 +32,13 @@ SecondHandLength: 0.45
 // SnowSizeFactor is a number that the dimensions of the snow image are multiplied by
 DoSnow: true
 SnowSizeFactor: 1.0
-SnowPerFrame: 2
+SnowPerFrame: 0.75
 SnowDeltaX: -6
 SnowDeltaYMin: 6
 SnowDeltaYMax: 11
 
 FlyingImages: false
-BackgroundColor: #2e6b41
+BackgroundColor: #0e2851
 Framerate: 60
 
 // format for RandomImages is: [path], [average number of seconds between each image], [side the image starts on], [range of speed], [range of opacity]

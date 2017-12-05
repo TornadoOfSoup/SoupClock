@@ -867,7 +867,8 @@ class Clock extends JFrame implements Runnable{
         int snowDeltaX = Integer.parseInt(configHashMap.get("SnowDeltaX"));
         float snowDeltaYMin = Integer.parseInt(configHashMap.get("SnowDeltaYMin"));
         float snowDeltaYMax = Integer.parseInt(configHashMap.get("SnowDeltaYMax"));
-        int snowPerFrame = Integer.parseInt(configHashMap.get("SnowPerFrame"));
+        double snowPerFrame = Double.parseDouble(configHashMap.get("SnowPerFrame"));
+        double internalSnowFactor = 0;
 
         while (true) {
             //run
@@ -936,7 +937,8 @@ class Clock extends JFrame implements Runnable{
 
                 if (doSnow) {
                     //TODO possibly add a variable wind (which would be deltaX) that changes over time
-                    for (int i = 0; i <= snowPerFrame; i++) {
+                    internalSnowFactor += snowPerFrame;
+                    while (internalSnowFactor >= 1) {
                         int x = randomNumberWithinBounds(snowMinX, snowMaxX);
                         if (r.nextInt(1000) == 0) {
                             conjureControlledImage(doge, x, -doge.getHeight(), snowDeltaX, randomNumberBetweenTwoFloats(snowDeltaYMin, snowDeltaYMax), 0.95f, true); //1 in 1000 chance to be a doge instead
@@ -947,6 +949,7 @@ class Clock extends JFrame implements Runnable{
                                 conjureControlledImage(snowflake1, x, -snowflake1.getHeight(), snowDeltaX, randomNumberBetweenTwoFloats(snowDeltaYMin, snowDeltaYMax), 0.95f, false);
                             }
                         }
+                        internalSnowFactor -= 1;
                     }
                 }
 
