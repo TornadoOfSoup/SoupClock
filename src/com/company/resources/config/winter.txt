@@ -12,6 +12,7 @@
 
 ResourcesFolder: resources/winter
 ClockSize: 0.9
+NumberClockRatio: 1.0
 DigitalClock: false
 DigitalClockColor: #00ff00
 DigitalClockFont: Courier New

@@ -173,6 +173,7 @@ class Clock extends JFrame implements Runnable{
 
     public void initFrame() {
         double clockSizeRatio = Double.parseDouble(configHashMap.get("ClockSize"));
+        double numberClockRatio = Double.parseDouble(configHashMap.get("NumberClockRatio"));
         setTitle("Halloween Clock by TornadoOfSoup");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -209,8 +210,8 @@ class Clock extends JFrame implements Runnable{
         double minuteHandLength = Double.parseDouble(configHashMap.get("MinuteHandLength"));
         double secondHandLength = Double.parseDouble(configHashMap.get("SecondHandLength"));
         
-        Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(background.getWidth(null) * 1),
-                (int) Math.round(background.getWidth(null) * 1), Image.SCALE_DEFAULT);
+        Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(background.getWidth(null) * numberClockRatio),
+                (int) Math.round(background.getWidth(null) * numberClockRatio), Image.SCALE_DEFAULT);
 
         numbersImage = new JLabel(new ImageIcon(numbers));
         numbersImage.setBounds(0, 0, resolution[0], resolution[1]);

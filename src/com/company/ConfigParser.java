@@ -37,6 +37,7 @@ public class ConfigParser {
 
             configHashMap.put("ResourcesFolder", "resources/default");
             configHashMap.put("ClockSize", "0.90");
+            configHashMap.put("NumberClockRatio", "1.0");
             configHashMap.put("DigitalClock", "false");
             configHashMap.put("DigitalClockColor", "#00ff00");
             configHashMap.put("DigitalClockFont", "Courier New");
