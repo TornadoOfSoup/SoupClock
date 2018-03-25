@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="SoupClock:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SoupClock_jar</output-path>
+    <root id="archive" name="clock.jar">
+      <element id="module-output" name="clock" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/mail/javax.mail-api/1.6.1/javax.mail-api-1.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/sun/mail/javax.mail/1.6.0/javax.mail-1.6.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

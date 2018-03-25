@@ -1,0 +1,51 @@
+// all colors are hex color codes, they must be prefixed with a "#"
+// for digital clock and schedule, monospaced fonts are recommended
+// clock size is the ratio of the size of the clock to the height of the screen, for example, "0.9" is 90% of screen height
+
+// lines can be commented out with "//" which allows you to try new
+//   configurations without deleting old ones
+// you can also use them to leave yourself notes
+
+// for ScheduleLocation: either TOP, BOTTOM, or CENTER
+
+// remove or comment out lines you want to be set to defaults
+
+ResourcesFolder: resources/stpatricks
+ClockSize: 0.9
+NumberClockRatio: 1.0
+DigitalClock: false
+DigitalClockColor: #00ff00
+DigitalClockFont: Courier New
+DigitalClockSize: 48
+Schedule: true
+ScheduleColor: #00ff00
+ScheduleFont: Consolas
+ScheduleSize: 24
+ScheduleLocation: BOTTOM
+PeriodHighlightColor: #000000
+HourHandLength: 0.32
+MinuteHandLength: 0.40
+SecondHandLength: 0.42
+
+// DO NOT set SnowPerFrame to a negative number
+// SnowDeltaX can be made negative to change direction
+// SnowDeltaYMin MUST be less than (or equal to) SnowDeltaYMax
+// SnowSizeFactor is a number that the dimensions of the snow image are multiplied by
+DoSnow: false
+SnowSizeFactor: 1.0
+SnowPerFrame: 0.75
+SnowDeltaX: -6
+SnowDeltaYMin: 6
+SnowDeltaYMax: 11
+
+FlyingImages: true
+BackgroundColor: #29602A
+Framerate: 60
+
+// format for RandomImages is: [path], [average number of seconds between each image], [side the image starts on], [range of speed], [range of opacity]
+// all random images must be on the same line, separated by a "|"
+// for starting side, use either "left", "right", or "random".
+// for the ranges, provide lower and upper bound -- ex: 5-10 for a number between 5 and 10
+// for speed, numbers must be integers; for opacity, numbers must be decimals between 0 and 1
+
+RandomImages: resources/stpatricks/shamrock.png, 5, random, 12-15, 0.3-0.8

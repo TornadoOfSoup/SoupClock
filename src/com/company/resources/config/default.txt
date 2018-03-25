@@ -30,7 +30,7 @@ SecondHandLength: 0.36
 // SnowDeltaX can be made negative to change direction
 // SnowDeltaYMin MUST be less than (or equal to) SnowDeltaYMax
 // SnowSizeFactor is a number that the dimensions of the snow image are multiplied by
-DoSnow: true
+DoSnow: false
 SnowSizeFactor: 1.0
 SnowPerFrame: 2
 SnowDeltaX: -6

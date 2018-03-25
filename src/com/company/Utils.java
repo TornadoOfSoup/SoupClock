@@ -2,6 +2,9 @@ package com.company;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Time;
 import java.util.List;
 import java.util.Random;
@@ -145,6 +148,22 @@ public class Utils {
     public static int randomNumberWithinBounds(int min, int max) {
         int difference = max - min;
         return r.nextInt(difference) + min;
+    }
+
+    public static void restart(String args) {
+        String pathToJar = null;
+        try {
+            pathToJar = URLDecoder.decode(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            pathToJar = pathToJar.substring(1, pathToJar.length());
+            String command = "java -jar " + pathToJar + " " + args;
+            Process proc = Runtime.getRuntime().exec(command);
+            System.out.println(command);
+            System.exit(0);
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 }
 

@@ -8,7 +8,9 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -36,7 +38,17 @@ public class Main {
                 configHashMap = ConfigParser.defaultConfiguration(true);
                 configHashMap.put("AutoStart", "true");
             } else {
-                configHashMap = ConfigParser.defaultConfiguration(true);
+                if (args[0].equals("config") && args.length >= 2) {
+                    File configFile = new File(args[1]);
+                    ArrayList<String> lines = ConfigParser.readLinesOfFile(configFile);
+                    configHashMap = ConfigParser.buildConfigHashMap(lines);
+                    configHashMap.put("AutoStart", "true");
+                    for (String line : lines) {
+                        System.out.println(line);
+                    }
+                } else {
+                    configHashMap = ConfigParser.defaultConfiguration(true);
+                }
             }
         } else {
             JFileChooser chooser = new JFileChooser(new File(currentDirectory().getPath()));
@@ -141,7 +153,7 @@ class Clock extends JFrame implements Runnable{
         if (configHashMap.containsKey("AutoStart")) {
             autoStart = Boolean.parseBoolean(configHashMap.get("AutoStart"));
             if (autoStart == true) {
-                schedule = new Schedule(1);
+                schedule = new Schedule(0);
             }
         }
         if (autoStart == false) {
@@ -166,6 +178,9 @@ class Clock extends JFrame implements Runnable{
             }
         }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
+
+        MailCheckRunnable mailRunnable = new MailCheckRunnable();
+        mailRunnable.start();
 
         initFrame();
     }
@@ -313,6 +328,10 @@ class Clock extends JFrame implements Runnable{
                     //conjureControlledImage(snowflake1, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
                 } else if (e.getKeyChar() == '=') {
                     //conjureControlledImage(snowflake2, 200, -50, randomNumberBetweenTwoFloats(-2, 2), 10, 0.9f);
+                } else if (e.getKeyChar() == 's') {
+                    doSnow = !doSnow;
+                } else if (e.getKeyChar() == 'r') {
+                    Utils.restart("default");
                 }
             }
 
@@ -515,43 +534,6 @@ class Clock extends JFrame implements Runnable{
         add(lightningPanel, BorderLayout.CENTER, layeredPane.highestLayer());
     }
 
-    public void randomImageFlyBy (BufferedImage img, int speed) {
-
-        int leftOrRight = r.nextInt(2);
-        int initY = r.nextInt(resolution[1]);
-        int initX;
-        if (leftOrRight == 0) { //starting left
-            initX = -200;
-        } else { //starting right
-            initX = resolution[0] + 200;
-        }
-        int finalY = r.nextInt(resolution[1]);
-        double deltaY = -((double) (initY - finalY) / (resolution[0] / speed));
-
-        System.out.println("initY: " + initY + " | finalY: " + finalY + " | deltaY: " + deltaY);
-
-        JPanel imagePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-
-                Graphics2D g2d = (Graphics2D) g;
-
-                    if (leftOrRight == 0) { //starting left
-                        g2d.drawImage(img, initX + (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
-                    } else {
-                        g2d.drawImage(img, initX - (speed * deltaTime), initY + (int)(deltaY * deltaTime), null);
-                    }
-
-            }
-        };
-        imagePanel.setSize(getSize());
-        imagePanel.setBackground(new Color(0, 0, 0, 0));
-        imagePanel.setOpaque(false);
-
-        add(imagePanel, BorderLayout.CENTER, layeredPane.highestLayer());
-    }
-
     public void conjureGhost() {
         BufferedImage ghost = null;
         try {
@@ -644,10 +626,16 @@ class Clock extends JFrame implements Runnable{
 
             float lowerOpacityBound = Float.parseFloat(opacityBounds[0]);
             float upperOpacityBound = Float.parseFloat(opacityBounds[1]);
+            float opacity;
             
             BufferedImage image = ImageIO.read(this.getClass().getResource(path));
+            if (upperOpacityBound == lowerOpacityBound) {
+                opacity = upperOpacityBound;
+            } else {
+                opacity = randomNumberBetweenTwoFloats(lowerOpacityBound, upperOpacityBound);
+            }
             add(new MovingImage(image, resolution, (r.nextInt(upperSpeedBound - lowerSpeedBound) + lowerSpeedBound), null,
-                    randomNumberBetweenTwoFloats(lowerOpacityBound, upperOpacityBound), MovingImage.DIE_WHEN_OFF_SCREEN, direction), BorderLayout.CENTER, layeredPane.highestLayer());
+                    opacity, MovingImage.DIE_WHEN_OFF_SCREEN, direction), BorderLayout.CENTER, layeredPane.highestLayer());
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (IllegalArgumentException ex) {
