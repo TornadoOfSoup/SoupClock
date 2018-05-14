@@ -107,10 +107,12 @@ class Clock extends JFrame implements Runnable{
 
     Calendar calendar = GregorianCalendar.getInstance();
 
+
     Date date = new Date(System.currentTimeMillis());
     int second, minute, hour, deltaTime, amOrPM, year, month, day;
 
     int scheduleSize;
+    int dateFormat;
 
     boolean initialFullscreen, doTickingSound, doSnow;
 
@@ -178,6 +180,7 @@ class Clock extends JFrame implements Runnable{
             }
         }
         scheduleSize = Integer.parseInt(configHashMap.get("ScheduleSize"));
+        dateFormat = Integer.parseInt(configHashMap.get("DateFormat"));
 
         MailCheckRunnable mailRunnable = new MailCheckRunnable();
         mailRunnable.start();
@@ -782,7 +785,15 @@ class Clock extends JFrame implements Runnable{
     }
 
     public void updateDate() {
-        dateLabel.setText(month + "/" + day + "/" + year);
+
+        if (dateFormat == 1) {
+            String yearString = (year + "").substring(2);
+            dateLabel.setText(month + "/" + day + "/" + yearString);
+        } else if (dateFormat == 2){
+            dateLabel.setText(month + "/" + day);
+        } else {
+            dateLabel.setText(month + "/" + day + "/" + year);
+        }
     }
 
     /**

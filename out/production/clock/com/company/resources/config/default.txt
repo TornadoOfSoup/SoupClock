@@ -7,6 +7,7 @@
 // you can also use them to leave yourself notes
 
 // for ScheduleLocation: either TOP, BOTTOM, or CENTER
+// for DateFormat: 0 for mm/dd/yyyy, 1 for mm/dd/yy, 2 for mm/dd
 
 // remove or comment out lines you want to be set to defaults
 
@@ -16,6 +17,7 @@ DigitalClock: false
 DigitalClockColor: #00ff00
 DigitalClockFont: Courier New
 DigitalClockSize: 48
+DateFormat: 2
 Schedule: true
 ScheduleColor: #00ff00
 ScheduleFont: Consolas
