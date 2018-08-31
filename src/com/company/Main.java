@@ -119,7 +119,7 @@ class Clock extends JFrame implements Runnable{
     RenderingHints antiAliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     HashMap<String, String> configHashMap;
-    HashMap<String, Period> schedulePeriods;
+    LinkedHashMap<String, Period> schedulePeriods;
     Schedule schedule;
 
     ArrayList<JLabel> periods = new ArrayList<>();
@@ -351,7 +351,8 @@ class Clock extends JFrame implements Runnable{
         guiPanel.setOpaque(false);
         guiPanel.setBackground(new Color(0, 0, 0, 0));
 
-        createSchedulePanel();
+        //createSchedulePanel(); //commented out because digital clock is taking its place
+        //TODO properly refactor any confusion between digital clock and schedule
         createDatePanel();
 
         add(guiPanel);
@@ -841,7 +842,9 @@ class Clock extends JFrame implements Runnable{
         boolean doSchedule = Boolean.parseBoolean(configHashMap.get("Schedule"));
         String[] images = configHashMap.get("RandomImages").split("\\|");
         Color periodHighlightColor = Color.decode(configHashMap.get("PeriodHighlightColor"));
-        periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
+        //periodHighlightColor = new Color(periodHighlightColor.getRed(), periodHighlightColor.getGreen(), periodHighlightColor.getBlue(), 128);
+        //commented out because the period list isn't a thing anymore
+        //TODO proper refactoring
 
         BufferedImage snowflake1 = null, doge = null;
         float snowSizeFactor = Float.parseFloat(configHashMap.get("SnowSizeFactor"));
@@ -876,7 +879,8 @@ class Clock extends JFrame implements Runnable{
             try {
                 Thread.sleep(1000/framerate);
                 updateTimeVars();
-                updateDigitalClock();
+                //updateDigitalClock(); //commented out to replace digital clock with schedule
+                //TODO proper refactoring
                 updateDate();
 
                 if (doTickingSound) {
@@ -897,9 +901,31 @@ class Clock extends JFrame implements Runnable{
                 }
 
                 if (doSchedule) {
-                    int i = 0; //variable to tell the first label not to get looked at by the thing
-                    for (JLabel label : periods) {
-                        if ((!schedule.getName().isEmpty() && i == 0)) {
+                    schedulePeriods = schedule.getPeriods();
+                    for (Map.Entry<String,Period> pair : schedulePeriods.entrySet()){
+                        String timesString = pair.getValue().toString();
+                        //iterate over the pairs
+                        //System.out.println(pair.getKey()+" "+pair.getValue());
+
+                        Time startTime = pair.getValue().getStartTime();
+                        Time endTime = pair.getValue().getEndTime();
+                        Time currentTime;
+
+                        if (amOrPM == Calendar.PM) {
+                            currentTime = parseTime((hour + 12) + ":" + minute + ":" + second);
+                        } else {
+                            currentTime = parseTime(hour + ":" + minute + ":" + second);
+                        }
+                        if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(endTime)) {
+                            digitalClock.setText(pair.getKey() + ": " + timesString);
+                        }
+
+                    }
+                    /*for (JLabel label : periods) {
+
+                        String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
+                            .split(" - "); //should get the times of the period
+                        if ((!schedule.getName().isEmpty())) {
 
                             if (!periodFont.equals(label.getFont())) { //still have to do this
                                 label.setFont(periodFont);
@@ -907,8 +933,7 @@ class Clock extends JFrame implements Runnable{
 
                             i++; //now i doesn't equal 0 so it will process as normal
                         } else {
-                            String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
-                                    .split(" - "); //should get the times of the period
+
                             //System.out.println(times[0] + "   |   " + times[1]);
                             Time startTime = parseTimeWithMeridian(times[0].replace(" ", ""));
                             Time endTime = parseTimeWithMeridian(times[1].replace(" ", ""));
@@ -932,7 +957,7 @@ class Clock extends JFrame implements Runnable{
                                 label.setBackground(new Color(0, 0, 0, 0));
                             }
                         }
-                    }
+                    }*/
                 }
 
                 if (doSnow) {
