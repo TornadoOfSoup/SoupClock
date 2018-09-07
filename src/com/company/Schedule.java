@@ -1,12 +1,13 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static com.company.Utils.parseTime;
 
 public class Schedule {
-    private LinkedHashMap<String, Period> periods = new LinkedHashMap<>();
+    private ArrayList<Period> periods = new ArrayList<>();
     String name;
 
     public static final int EMPTY_SCHEDULE = 0;
@@ -37,46 +38,31 @@ public class Schedule {
 
         if (schedule == DEFAULT_SCHEDULE) {
             name = "Normal Schedule";
-            periods.put("A", new Period(parseTime("8:19"), parseTime("9:07")));
-            periods.put("B", new Period(parseTime("9:11"), parseTime("9:59")));
-            periods.put("C", new Period(parseTime("10:03"), parseTime("10:51")));
-            periods.put("D", new Period(parseTime("10:55"), parseTime("11:43")));
-            periods.put("E", new Period(parseTime("11:47"), parseTime("12:35")));
-            periods.put("Lunch", new Period(parseTime("12:35"), parseTime("13:01")));
-            periods.put("F", new Period(parseTime("13:01"), parseTime("13:53")));
-            periods.put("G", new Period(parseTime("13:57"), parseTime("14:45")));
+            periods.add(new Period(parseTime("8:05"), parseTime("8:55"), "A"));
+            periods.add(new Period(parseTime("8:58"), parseTime("9:42"), "B"));
+            periods.add(new Period(parseTime("9:45"), parseTime("10:30"), "C"));
+            periods.add(new Period(parseTime("10:33"), parseTime("11:03"), "X"));
+            periods.add(new Period(parseTime("11:06"), parseTime("11:51"), "D"));
+            periods.add(new Period(parseTime("11:54"), parseTime("12:39"), "E"));
+            periods.add(new Period(parseTime("12:39"), parseTime("13:09"), "Lunch"));
+            periods.add(new Period(parseTime("13:01"), parseTime("13:53"), "F"));
+            periods.add(new Period(parseTime("13:57"), parseTime("14:45"), "G"));
         } else if (schedule == H_PERIOD_ENDING_SCHEDULE) {
             name = "H Period Schedule";
-            periods.put("A", new Period(parseTime("8:15"), parseTime("8:57")));
-            periods.put("B", new Period(parseTime("9:01"), parseTime("9:43")));
-            periods.put("C", new Period(parseTime("9:47"), parseTime("10:29")));
-            periods.put("D", new Period(parseTime("10:33"), parseTime("11:15")));
-            periods.put("E", new Period(parseTime("11:19"), parseTime("12:01")));
-            periods.put("F", new Period(parseTime("12:05"), parseTime("12:47")));
-            periods.put("Lunch", new Period(parseTime("12:47"), parseTime("13:18")));
-            periods.put("G", new Period(parseTime("13:18"), parseTime("14:00")));
-            periods.put("H", new Period(parseTime("14:03"), parseTime("14:45")));
+            periods.add(new Period(parseTime("00:00"), parseTime("23:59"), "H"));
         } else if (schedule == H_PERIOD_BEGINNING_SCHEDULE) {
             name = "H Period Schedule";
-            periods.put("H", new Period(parseTime("8:15"), parseTime("8:57")));
-            periods.put("A", new Period(parseTime("9:01"), parseTime("9:43")));
-            periods.put("B", new Period(parseTime("9:47"), parseTime("10:29")));
-            periods.put("C", new Period(parseTime("10:33"), parseTime("11:15")));
-            periods.put("D", new Period(parseTime("11:19"), parseTime("12:01")));
-            periods.put("E", new Period(parseTime("12:05"), parseTime("12:47")));
-            periods.put("Lunch", new Period(parseTime("12:47"), parseTime("13:18")));
-            periods.put("F", new Period(parseTime("13:18"), parseTime("14:00")));
-            periods.put("G", new Period(parseTime("14:03"), parseTime("14:45")));
+            periods.add(new Period(parseTime("00:00"), parseTime("23:59"), "H"));
         } else if (schedule == TEST_SCHEDULE) {
             name = "Test";
-            periods.put("A", new Period(parseTime("00:00"), parseTime("01:00")));
-            periods.put("B", new Period(parseTime("11:53"), parseTime("11:54")));
-            periods.put("C", new Period(parseTime("11:54"), parseTime("11:55")));
+            periods.add(new Period(parseTime("8:05"), parseTime("8:55"), "A"));
+            periods.add(new Period(parseTime("8:58"), parseTime("9:42"), "B"));
+            periods.add(new Period(parseTime("9:45"), parseTime("10:30"), "C"));
         }
     }
 
     public void addToSchedule(String periodName, Period period) {
-        periods.put(periodName, period);
+        periods.add(period);
     }
 
     public boolean removeFromSchedule(String periodName) {
@@ -96,11 +82,11 @@ public class Schedule {
         return name;
     }
 
-    public LinkedHashMap<String, Period> getPeriods() {
+    public ArrayList<Period> getPeriods() {
         return periods;
     }
 
-    public void setPeriods(LinkedHashMap<String, Period> periods) {
+    public void setPeriods(ArrayList<Period> periods) {
         this.periods = periods;
     }
 }

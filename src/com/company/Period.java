@@ -6,11 +6,13 @@ import static com.company.Utils.get12HourStringFromTime;
 
 public class Period {
     Time startTime, endTime;
+    String name;
 
 
-    public Period(Time startTime, Time endTime) {
+    public Period(Time startTime, Time endTime, String name) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.name = name;
 
         checkTimeValidity();
     }
@@ -51,8 +53,12 @@ public class Period {
         return endTime;
     }
 
+    public String getTimeString() {
+        return get12HourStringFromTime(startTime, true) + " - " + get12HourStringFromTime(endTime, true);
+    }
+
     @Override
     public String toString() {
-        return get12HourStringFromTime(startTime, true) + " - " + get12HourStringFromTime(endTime, true);
+        return name + ": " + get12HourStringFromTime(startTime, true) + " - " + get12HourStringFromTime(endTime, true);
     }
 }

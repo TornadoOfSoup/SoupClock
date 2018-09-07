@@ -13,11 +13,11 @@
 
 ResourcesFolder: resources/default
 ClockSize: 0.9
-DigitalClock: false
-DigitalClockColor: #00ff00
+DigitalClock: true
+DigitalClockColor: #f2cc52
 DigitalClockFont: Courier New
 DigitalClockSize: 48
-DateFormat: 2
+DateFormat: 0
 Schedule: true
 ScheduleColor: #00ff00
 ScheduleFont: Consolas

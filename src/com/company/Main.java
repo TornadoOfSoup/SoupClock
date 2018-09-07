@@ -119,11 +119,11 @@ class Clock extends JFrame implements Runnable{
     RenderingHints antiAliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     HashMap<String, String> configHashMap;
-    LinkedHashMap<String, Period> schedulePeriods;
+    ArrayList<Period> schedulePeriods;
     Schedule schedule;
 
     ArrayList<JLabel> periods = new ArrayList<>();
-    
+
     static JLayeredPane layeredPane = new JLayeredPane();
     static JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -223,17 +223,17 @@ class Clock extends JFrame implements Runnable{
 
         backgroundImage = new JLabel(new ImageIcon(background));
         backgroundImage.setBounds(0, 0, resolution[0], resolution[1]);
-        
+
         double hourHandLength = Double.parseDouble(configHashMap.get("HourHandLength"));
         double minuteHandLength = Double.parseDouble(configHashMap.get("MinuteHandLength"));
         double secondHandLength = Double.parseDouble(configHashMap.get("SecondHandLength"));
-        
+
         Image numbers = numbersIcon.getImage().getScaledInstance((int) Math.round(background.getWidth(null) * numberClockRatio),
                 (int) Math.round(background.getWidth(null) * numberClockRatio), Image.SCALE_DEFAULT);
 
         numbersImage = new JLabel(new ImageIcon(numbers));
         numbersImage.setBounds(0, 0, resolution[0], resolution[1]);
-        
+
         hourHand = hourHandIcon.getImage().getScaledInstance((int) Math.round(backgroundImage.getWidth() * hourHandLength / hourHandRatio),
                 (int) Math.round(backgroundImage.getWidth() * hourHandLength), Image.SCALE_DEFAULT); //width must be 1/6 of height for proper proportions
 
@@ -254,7 +254,7 @@ class Clock extends JFrame implements Runnable{
         secondHandImage = new JLabel(new ImageIcon(secondHand));
         secondHandImage.setBounds(0, 0, resolution[0], resolution[1]);
         //secondPanel.add(secondHandImage);
-        
+
         layeredPane.add(backgroundImage, BorderLayout.CENTER, new Integer(0)); //Integers are depth
         layeredPane.add(numbersImage, BorderLayout.CENTER, new Integer(0));
         layeredPane.add(invisibleLabel, BorderLayout.CENTER, new Integer(0)); //fixes analog clock numbers being moved by digital clock
@@ -358,6 +358,7 @@ class Clock extends JFrame implements Runnable{
         add(guiPanel);
     }
 
+    /*
     public void createSchedulePanel() {
         schedulePanel = new JPanel();
         schedulePanel.setLayout(new BoxLayout(schedulePanel, BoxLayout.Y_AXIS));
@@ -421,6 +422,7 @@ class Clock extends JFrame implements Runnable{
         }
         guiPanel.add(schedulePanel);
     }
+*/
 
     public void createDatePanel() {
         datePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -435,7 +437,7 @@ class Clock extends JFrame implements Runnable{
 
         guiPanel.add(datePanel, BorderLayout.SOUTH);
     }
-    
+
     public void createClockHands() {
         updateTimeVars();
 
@@ -631,7 +633,7 @@ class Clock extends JFrame implements Runnable{
             float lowerOpacityBound = Float.parseFloat(opacityBounds[0]);
             float upperOpacityBound = Float.parseFloat(opacityBounds[1]);
             float opacity;
-            
+
             BufferedImage image = ImageIO.read(this.getClass().getResource(path));
             if (upperOpacityBound == lowerOpacityBound) {
                 opacity = upperOpacityBound;
@@ -873,6 +875,10 @@ class Clock extends JFrame implements Runnable{
         double snowPerFrame = Double.parseDouble(configHashMap.get("SnowPerFrame"));
         double internalSnowFactor = 0;
 
+        if (doSchedule) {
+            schedulePeriods = schedule.getPeriods();
+        }
+
         while (true) {
             //run
             Font periodFont = new Font(configHashMap.get("ScheduleFont"), Font.PLAIN, scheduleSize);
@@ -901,14 +907,11 @@ class Clock extends JFrame implements Runnable{
                 }
 
                 if (doSchedule) {
-                    schedulePeriods = schedule.getPeriods();
-                    for (Map.Entry<String,Period> pair : schedulePeriods.entrySet()){
-                        String timesString = pair.getValue().toString();
-                        //iterate over the pairs
-                        //System.out.println(pair.getKey()+" "+pair.getValue());
+                    for (Period period : schedulePeriods){
+                        String timesString = period.getTimeString();
 
-                        Time startTime = pair.getValue().getStartTime();
-                        Time endTime = pair.getValue().getEndTime();
+                        Time startTime = period.getStartTime();
+                        Time endTime = period.getEndTime();
                         Time currentTime;
 
                         if (amOrPM == Calendar.PM) {
@@ -916,11 +919,16 @@ class Clock extends JFrame implements Runnable{
                         } else {
                             currentTime = parseTime(hour + ":" + minute + ":" + second);
                         }
-                        if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(endTime)) {
-                            digitalClock.setText(pair.getKey() + ": " + timesString);
+                        if (currentTime.after(endTime)) {
+                            continue;
+                        } else if (currentTime.after(startTime)) {
+                            //TODO make this work lol
+                            System.out.println(period.name + ": " + timesString);
+                            digitalClock.setText(period.name + ": " + timesString);
                         }
 
                     }
+
                     /*for (JLabel label : periods) {
 
                         String[] times = label.getText().substring(label.getText().indexOf(":") + 1, label.getText().length())
